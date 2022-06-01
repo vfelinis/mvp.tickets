@@ -4,7 +4,8 @@ using mvp.tickets.web.Extensions;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.RegisterDependencies(builder.Configuration);
+
+builder.Services.RegisterDependencies(builder.Configuration, builder.Environment);
 
 var app = builder.Build();
 
@@ -32,7 +33,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
-app.MapFallbackToFile("index.html");
+app.MapFallbackToFile("/index.html");
 
 InitializationHelper.Initialize(app.Services);
 

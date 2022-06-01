@@ -21,7 +21,7 @@ namespace mvp.tickets.data.Stores
 
         public UserStore(IConnectionStrings connectionStrings)
         {
-            _connectionStrings = connectionStrings ?? ThrowHelper.NullArgument<IConnectionStrings>();
+            _connectionStrings = connectionStrings ?? ThrowHelper.ArgumentNull<IConnectionStrings>();
         }
 
         public async Task<IBaseReportQueryResponse<IUserReportModel>> GetUsersReport(IBaseReportQueryRequest request)

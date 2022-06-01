@@ -9,7 +9,7 @@ namespace mvp.tickets.web.Extensions
 {
     public static class DependencyExtension
     {
-        public static void RegisterDependencies(this IServiceCollection services, IConfiguration config)
+        public static void RegisterDependencies(this IServiceCollection services, IConfiguration config, IWebHostEnvironment env)
         {
             #region Web
             services.Configure<ForwardedHeadersOptions>(options =>
@@ -39,6 +39,10 @@ namespace mvp.tickets.web.Extensions
             #region Domain
             services.AddTransient<IUserService, UserService>();
             #endregion
+
+            var appSettings = config.Get<AppSettings>();
+            appSettings.FirebaseAdminConfig = File.ReadAllText(Path.Combine(env.ContentRootPath, "FirebaseAdmin.json"));
+            services.AddSingleton(appSettings);
         }
     }
 }

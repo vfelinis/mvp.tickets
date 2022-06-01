@@ -2,9 +2,14 @@
 {
     public static class ThrowHelper
     {
-        public static T NullArgument<T>()
+        public static T ArgumentNull<T>()
         {
             throw new ArgumentNullException(typeof(T).ToString());
+        }
+
+        public static void ArgumentNull(string name)
+        {
+            throw new ArgumentNullException(name);
         }
     }
 }
