@@ -8,7 +8,7 @@ namespace mvp.tickets.data.Procedures
     public static class UsersReportProcedure
     {
         public static string Name => "procUsersReport";
-        public static int Version => 1;
+        public static int Version => 2;
         public static class Params
         {
             public static string Offset => "@offset";
@@ -31,7 +31,6 @@ BEGIN
         ,[{nameof(User.FirstName)}] AS [{nameof(UserReportModel.FirstName)}]
         ,[{nameof(User.LastName)}] AS [{nameof(UserReportModel.LastName)}]
         ,[{nameof(User.Permissions)}] AS [{nameof(UserReportModel.Permissions)}]
-        ,[{nameof(User.IsActive)}] AS [{nameof(UserReportModel.IsActive)}]
         ,[{nameof(User.IsLocked)}] AS [{nameof(UserReportModel.IsLocked)}]
         ,[{nameof(User.DateCreated)}] AS [{nameof(UserReportModel.DateCreated)}]
         ,[{nameof(User.DateModified)}] AS [{nameof(UserReportModel.DateModified)}]

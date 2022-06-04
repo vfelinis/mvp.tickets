@@ -2,11 +2,9 @@
 {
     public interface IBaseRequest
     {
-        Guid RequestId { get; set; }
     }
     public record BaseRequest : IBaseRequest
     {
-        public Guid RequestId { get; set; }
     }
 
     public interface IBaseCommandRequest : IBaseRequest { }

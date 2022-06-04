@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Localization;
 using mvp.tickets.data.Helpers;
 using mvp.tickets.web.Extensions;
+using mvp.tickets.web.Middlewares;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +32,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseMiddleware<AuthMiddleware>();
 
 app.MapControllers();
 app.MapFallbackToFile("/index.html");

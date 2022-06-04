@@ -13,12 +13,15 @@ export interface IBaseResponse {
     errorMessage: string
 }
 
-export interface IBaseCommandResponse extends IBaseResponse {}
+export interface IBaseCommandResponse<T> extends IBaseResponse {
+    data: T
+}
 
-export interface IBaseQueryResponse extends IBaseResponse {}
+export interface IBaseQueryResponse<T> extends IBaseResponse {
+    data: T
+}
 
-export interface IBaseReportQueryResponse<T> extends IBaseQueryResponse
+export interface IBaseReportQueryResponse<T> extends IBaseQueryResponse<T>
 {
-    data: T[]
     total: number
 }

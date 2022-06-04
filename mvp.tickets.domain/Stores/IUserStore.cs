@@ -4,6 +4,8 @@ namespace mvp.tickets.domain.Stores
 {
     public interface IUserStore
     {
-        Task<IBaseReportQueryResponse<IUserReportModel>> GetUsersReport(IBaseReportQueryRequest request);
+        Task<IBaseCommandResponse<IUserModel>> Create(IUserCreateCommandRequest request);
+        Task<IBaseQueryResponse<IUserModel>> Query(IUserQueryRequest request);
+        Task<IBaseReportQueryResponse<IEnumerable<IUserReportModel>>> GetUsersReport(IBaseReportQueryRequest request);
     }
 }

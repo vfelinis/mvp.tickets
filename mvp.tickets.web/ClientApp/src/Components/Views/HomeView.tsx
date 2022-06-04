@@ -1,9 +1,9 @@
-import * as React from 'react';
+import { FC } from 'react';
 
 interface IHomeViewProps {
 }
 
-const HomeView: React.FunctionComponent<IHomeViewProps> = (props) => {
+const HomeView: FC<IHomeViewProps> = (props) => {
   return <>Добро пожаловать!</>;
 };
 

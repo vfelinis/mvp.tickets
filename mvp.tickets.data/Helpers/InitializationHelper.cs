@@ -28,7 +28,6 @@ namespace mvp.tickets.data.Helpers
                             Email = "tickets@mvp-stack.com",
                             FirstName = "Admin",
                             LastName = "Admin",
-                            IsActive = true,
                             IsLocked = false,
                             Permissions = domain.Enums.Permissions.Admin,
                             DateCreated = DateTimeOffset.Now,

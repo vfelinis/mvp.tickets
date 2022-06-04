@@ -1,7 +1,10 @@
-﻿using Microsoft.AspNetCore.HttpOverrides;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using mvp.tickets.data;
 using mvp.tickets.data.Stores;
+using mvp.tickets.domain.Constants;
+using mvp.tickets.domain.Models;
 using mvp.tickets.domain.Services;
 using mvp.tickets.domain.Stores;
 
@@ -23,6 +26,18 @@ namespace mvp.tickets.web.Extensions
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = new Microsoft.AspNetCore.Http.PathString("/login/");
+                });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy(AuthConstants.AdminPolicy, policy => policy.RequireClaim(AuthConstants.AdminClaim));
+                options.AddPolicy(AuthConstants.EmployeePolicy, policy => policy.RequireClaim(AuthConstants.EmployeeClaim));
+            });
             #endregion
 
             #region Data
@@ -40,9 +55,11 @@ namespace mvp.tickets.web.Extensions
             services.AddTransient<IUserService, UserService>();
             #endregion
 
-            var appSettings = config.Get<AppSettings>();
-            appSettings.FirebaseAdminConfig = File.ReadAllText(Path.Combine(env.ContentRootPath, "FirebaseAdmin.json"));
-            services.AddSingleton(appSettings);
+            var settings = new Settings
+            {
+                FirebaseAdminConfig = File.ReadAllText(Path.Combine(env.ContentRootPath, "FirebaseAdmin.json"))
+            };
+            services.AddSingleton<ISettings>(settings);
         }
     }
 }

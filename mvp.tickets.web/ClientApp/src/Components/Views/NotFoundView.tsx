@@ -1,9 +1,9 @@
-import * as React from 'react';
+import { FC } from 'react';
 
 interface INotFoundViewProps {
 }
 
-const NotFoundView: React.FunctionComponent<INotFoundViewProps> = (props) => {
+const NotFoundView: FC<INotFoundViewProps> = (props) => {
   return <>Старинца не найдена.</>;
 };
 
