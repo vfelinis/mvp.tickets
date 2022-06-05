@@ -20,6 +20,9 @@ const AdminCategoriesCreateView: FC<IAdminCategoriesCreateViewProps> = (props) =
 
     useEffect(() => {
         store.categoryStore.getDataForCreateForm();
+        return () => {
+            store.categoryStore.setCategories([]);
+        };
     }, []);
 
     return <>
@@ -48,9 +51,8 @@ const AdminCategoriesCreateView: FC<IAdminCategoriesCreateViewProps> = (props) =
                 label="Активная категория" />
             <Autocomplete
                 disablePortal
-                options={store.categoryStore.categories.slice().sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)).map(s => {
-                    return { label: s.name, id: s.id }
-                })}
+                options={store.categoryStore.categories.slice().sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))}
+                getOptionLabel={option => option.name}
                 onChange={(event, value) => setCategory({ ...category, parentCategoryId: value?.id ?? null })}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => <TextField {...params} label="Родительская категория" />}

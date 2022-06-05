@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { UIRoutesHelper } from '../../../Helpers/UIRoutesHelper';
-import { ICategoryUpdateCommandRequest } from '../../../Models/Category';
+import { ICategoryModel, ICategoryUpdateCommandRequest } from '../../../Models/Category';
 import { useRootStore } from '../../../Store/RootStore';
 
 interface IAdminCategoriesUpdateViewProps {
@@ -13,14 +13,24 @@ interface IAdminCategoriesUpdateViewProps {
 const AdminCategoriesUpdateView: FC<IAdminCategoriesUpdateViewProps> = (props) => {
     const store = useRootStore();
     const [category, setCategory] = useState<ICategoryUpdateCommandRequest>({ id: 0, name: '', isActive: true, parentCategoryId: null });
+    const [selectedParent, setSelectedParent] = useState<ICategoryModel | null>(null);
     const { id } = useParams();
 
     const handleSubmit = () => {
         store.categoryStore.update(category);
     }
 
+    const onParentSelect = (value: ICategoryModel | null) : void => {
+        setSelectedParent(value);
+        setCategory({...category, parentCategoryId: value?.id ?? null});
+    };
+
     useEffect(() => {
         store.categoryStore.getDataForUpdateForm(Number(id));
+        return () => {
+            store.categoryStore.setCategory(null);
+            store.categoryStore.setCategories([]);
+        };
     }, []);
 
     useLayoutEffect(() => {
@@ -30,20 +40,15 @@ const AdminCategoriesUpdateView: FC<IAdminCategoriesUpdateViewProps> = (props) =
             isActive: store.categoryStore.category?.isActive ?? true,
             parentCategoryId: store.categoryStore.category?.parentCategoryId ?? null
         });
-    }, [store.categoryStore.category]);
-
-    const categories = store.categoryStore.categories.filter(s => s.id !== category.id).sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0)).map(s => {
-        return { label: s.name, id: s.id }
-    });
-    let parent = undefined;
-    const found = categories.find(s => s.id === category.parentCategoryId);
-    if (found) {
-        parent = found.label;
-    }
+        const parent = store.categoryStore.categories.find(s => s.id === store.categoryStore.category?.parentCategoryId);
+        if (parent) {
+            setSelectedParent(parent);
+        }
+    }, [store.categoryStore.categories]);
 
     return <>
         <Typography variant="h6" component="div">
-            Создать категорию
+            Редактировать категорию
         </Typography>
         <Box component={ValidatorForm}
             onSubmit={handleSubmit}
@@ -67,9 +72,10 @@ const AdminCategoriesUpdateView: FC<IAdminCategoriesUpdateViewProps> = (props) =
                 label="Активная категория" />
             <Autocomplete
                 disablePortal
-                inputValue={parent}
-                options={categories}
-                onChange={(event, value) => setCategory({ ...category, parentCategoryId: value?.id ?? null })}
+                value={selectedParent}
+                options={store.categoryStore.categories.filter(s => s.id !== category.id).sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))}
+                getOptionLabel={option => option.name}
+                onChange={(event, value) => onParentSelect(value)}
                 isOptionEqualToValue={(option, value) => option.id === value.id}
                 renderInput={(params) => <TextField {...params} label="Родительская категория" />}
             />

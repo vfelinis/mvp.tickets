@@ -42,7 +42,7 @@ export class CategoryStore {
         this.categories = categories;
     }
 
-    setCategory(category: ICategoryModel) : void {
+    setCategory(category: ICategoryModel | null) : void {
         this.category = category;
     }
 
