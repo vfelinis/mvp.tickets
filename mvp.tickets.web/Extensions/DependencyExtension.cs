@@ -49,10 +49,12 @@ namespace mvp.tickets.web.Extensions
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionsStrings.DefaultConnection));
             services.AddTransient<IUserStore, UserStore>();
+            services.AddTransient<ICategoryStore, CategoryStore>();
             #endregion
 
             #region Domain
             services.AddTransient<IUserService, UserService>();
+            services.AddTransient<ICategoryService, CategoryService>();
             #endregion
 
             var settings = new Settings

@@ -1,15 +1,15 @@
 import { Typography } from '@mui/material';
 import { FC } from 'react';
 
-interface INotFoundViewProps {
+interface ITicketsViewProps {
 }
 
-const NotFoundView: FC<INotFoundViewProps> = (props) => {
+const TicketsView: FC<ITicketsViewProps> = (props) => {
   return <>
     <Typography variant="h6" component="div">
-      Страница не найдена.
+      Мои заявки
     </Typography>
   </>;
 };
 
-export default NotFoundView;
+export default TicketsView;

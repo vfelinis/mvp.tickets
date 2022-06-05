@@ -1,16 +1,19 @@
 import axios from 'axios';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter } from 'react-router-dom';
+import { unstable_HistoryRouter as HistoryRouter } from "react-router-dom";
+import { createBrowserHistory } from "history";
 import { App } from './App'
 import { ApiRoutesHelper } from './Helpers/ApiRoutesHelper';
 import { IBaseQueryResponse } from './Models/Base';
-import { IUserModel } from './Store/UserStore';
+import { IUserModel } from './Models/User';
+
+export const browserHistory = createBrowserHistory({ window });
 
 const init = (user: IUserModel | null) => {
   const element = (
-    <BrowserRouter>
+    <HistoryRouter history={browserHistory}>
       <App user={user} />
-    </BrowserRouter>
+    </HistoryRouter>
   );
 
   const container = document.getElementById('root');

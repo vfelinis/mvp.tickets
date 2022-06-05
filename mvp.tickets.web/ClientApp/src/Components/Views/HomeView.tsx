@@ -1,10 +1,15 @@
+import { Typography } from '@mui/material';
 import { FC } from 'react';
 
 interface IHomeViewProps {
 }
 
 const HomeView: FC<IHomeViewProps> = (props) => {
-  return <>Добро пожаловать!</>;
+  return <>
+    <Typography variant="h6" component="div">
+      Главная
+    </Typography>
+  </>;
 };
 
 export default HomeView;

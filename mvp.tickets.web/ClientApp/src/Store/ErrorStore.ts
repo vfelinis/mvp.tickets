@@ -18,7 +18,7 @@ export class ErrorStore {
         this.errors = [...this.errors, error];
     }
 
-    clearErrors(): void {
-        this.errors = [];
+    clearErrors(index?: number): void {
+        this.errors = index === undefined ? [] : this.errors.filter((s, i) => i !== index);
     }
 }

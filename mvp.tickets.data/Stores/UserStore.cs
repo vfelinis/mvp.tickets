@@ -46,7 +46,9 @@ namespace mvp.tickets.data.Stores
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     IsLocked = user.IsLocked,
-                    Permissions = user.Permissions
+                    Permissions = user.Permissions,
+                    DateCreated = user.DateCreated,
+                    DateModified = user.DateModified,
                 },
                 IsSuccess = true,
                 Code = ResponseCodes.Success
@@ -77,7 +79,9 @@ namespace mvp.tickets.data.Stores
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     Permissions = user.Permissions,
-                    IsLocked = user.IsLocked
+                    IsLocked = user.IsLocked,
+                    DateCreated = user.DateCreated,
+                    DateModified = user.DateModified,
                 };
             }
             else
@@ -89,20 +93,20 @@ namespace mvp.tickets.data.Stores
             return response;
         }
 
-        public async Task<IBaseReportQueryResponse<IEnumerable<IUserReportModel>>> GetUsersReport(IBaseReportQueryRequest request)
+        public async Task<IBaseReportQueryResponse<IEnumerable<IUserModel>>> GetUsers(IBaseReportQueryRequest request)
         {
             using (var connection = new SqlConnection(_connectionStrings.DefaultConnection))
             {
                 DynamicParameters parameter = new DynamicParameters();
-                parameter.Add(UsersReportProcedure.Params.Offset, request.Offset ?? 0, DbType.Int32);
-                parameter.Add(UsersReportProcedure.Params.Limit, request.Limmit ?? ReportConstants.DEFAULT_LIMIT, DbType.Int32);
+                parameter.Add(GetUsersProcedure.Params.Offset, request.Offset ?? 0, DbType.Int32);
+                parameter.Add(GetUsersProcedure.Params.Limit, request.Limmit ?? ReportConstants.DEFAULT_LIMIT, DbType.Int32);
 
-                using (var multi = await connection.QueryMultipleAsync(UsersReportProcedure.Name, param: parameter,
+                using (var multi = await connection.QueryMultipleAsync(GetUsersProcedure.Name, param: parameter,
                     commandType: CommandType.StoredProcedure).ConfigureAwait(false))
                 {
-                    return new BaseReportQueryResponse<IEnumerable<IUserReportModel>>
+                    return new BaseReportQueryResponse<IEnumerable<IUserModel>>
                     {
-                        Data = multi.Read<UserReportModel>().ToList(),
+                        Data = multi.Read<UserModel>().ToList(),
                         Total = multi.Read<int>().FirstOrDefault(),
                         IsSuccess = true,
                         Code = ResponseCodes.Success

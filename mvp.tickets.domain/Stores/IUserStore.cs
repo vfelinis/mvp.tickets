@@ -6,6 +6,6 @@ namespace mvp.tickets.domain.Stores
     {
         Task<IBaseCommandResponse<IUserModel>> Create(IUserCreateCommandRequest request);
         Task<IBaseQueryResponse<IUserModel>> Query(IUserQueryRequest request);
-        Task<IBaseReportQueryResponse<IEnumerable<IUserReportModel>>> GetUsersReport(IBaseReportQueryRequest request);
+        Task<IBaseReportQueryResponse<IEnumerable<IUserModel>>> GetUsers(IBaseReportQueryRequest request);
     }
 }

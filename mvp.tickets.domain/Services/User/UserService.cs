@@ -118,27 +118,27 @@ namespace mvp.tickets.domain.Services
             return response;
         }
 
-        public async Task<IBaseReportQueryResponse<IEnumerable<IUserReportModel>>> GetUsersReport(IBaseReportQueryRequest request)
+        public async Task<IBaseReportQueryResponse<IEnumerable<IUserModel>>> GetUsersReport(IBaseReportQueryRequest request)
         {
             if (request == null)
             {
-                return new BaseReportQueryResponse<IEnumerable<IUserReportModel>>
+                return new BaseReportQueryResponse<IEnumerable<IUserModel>>
                 {
                     IsSuccess = false,
                     Code = ResponseCodes.BadRequest
                 };
             }
 
-            IBaseReportQueryResponse<IEnumerable<IUserReportModel>> response = default;
+            IBaseReportQueryResponse<IEnumerable<IUserModel>> response = default;
 
             try
             {
-                response = await _userStore.GetUsersReport(request).ConfigureAwait(false);
+                response = await _userStore.GetUsers(request).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, ex.Message);
-                response = new BaseReportQueryResponse<IEnumerable<IUserReportModel>>();
+                response = new BaseReportQueryResponse<IEnumerable<IUserModel>>();
                 response.HandleException(ex);
             }
             return response;

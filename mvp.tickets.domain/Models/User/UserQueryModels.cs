@@ -22,6 +22,8 @@ namespace mvp.tickets.domain.Models
         string LastName { get; set; }
         Permissions Permissions { get; set; }
         bool IsLocked { get; set; }
+        DateTimeOffset DateCreated { get; set; }
+        DateTimeOffset DateModified { get; set; }
     }
 
     public record UserModel: IUserModel
@@ -32,17 +34,6 @@ namespace mvp.tickets.domain.Models
         public string LastName { get; set; }
         public Permissions Permissions { get; set; }
         public bool IsLocked { get; set; }
-    }
-
-    public interface IUserReportModel : IUserModel
-    {
-        
-        DateTimeOffset DateCreated { get; set; }
-        DateTimeOffset DateModified { get; set; }
-    }
-
-    public record UserReportModel: UserModel, IUserReportModel
-    {
         public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset DateModified { get; set; }
     }

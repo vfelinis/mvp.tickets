@@ -68,7 +68,7 @@ namespace mvp.tickets.web.Controllers
         }
 
         [HttpGet("report")]
-        public async Task<IBaseReportQueryResponse<IEnumerable<IUserReportModel>>> GetUsersReport([FromQuery] BaseReportQueryRequest request)
+        public async Task<IBaseReportQueryResponse<IEnumerable<IUserModel>>> GetUsersReport([FromQuery] BaseReportQueryRequest request)
         {
             return await _userService.GetUsersReport(request);
         }

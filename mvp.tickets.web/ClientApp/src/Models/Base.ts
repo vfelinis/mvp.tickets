@@ -8,9 +8,9 @@ export enum ResponseCodes {
 }
 
 export interface IBaseResponse {
-    isSuccess: boolean
-    code: ResponseCodes
-    errorMessage: string
+    isSuccess: boolean,
+    code: ResponseCodes,
+    errorMessage: string,
 }
 
 export interface IBaseCommandResponse<T> extends IBaseResponse {
