@@ -85,6 +85,16 @@ namespace mvp.tickets.domain.Services
 
                     userModel = createResponse.Data;
                 }
+                else if (userModel.IsLocked)
+                {
+                    response = new BaseCommandResponse<(IUserModel user, List<Claim> claims)>
+                    {
+                        Data = (userModel, new List<Claim>()),
+                        IsSuccess = false,
+                        Code = ResponseCodes.BadRequest,
+                        ErrorMessage = "Учетная запись пользователя заблокирована."
+                    };
+                }
 
                 var claims = new List<Claim>
                 {
