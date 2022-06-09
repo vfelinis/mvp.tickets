@@ -1,4 +1,7 @@
-﻿namespace mvp.tickets.domain.Models
+﻿using mvp.tickets.domain.Enums;
+using System.ComponentModel.DataAnnotations;
+
+namespace mvp.tickets.domain.Models
 {
     public interface IBaseRequest
     {
@@ -15,12 +18,17 @@
 
     public interface IBaseReportQueryRequest : IBaseQueryRequest
     {
-        int? Offset { get; set; }
-        int? Limmit { get; set; }
+        Dictionary<string, string> SearchBy { get; set; }
+        string SortBy { get; set; }
+        SortDirection SortDirection { get; set; }
+        int Offset { get; set; }
     }
     public record BaseReportQueryRequest : BaseQueryRequest, IBaseReportQueryRequest
     {
-        public int? Offset { get; set; }
-        public int? Limmit { get; set; }
+        public Dictionary<string, string> SearchBy { get; set; } = new Dictionary<string, string>();
+        public string SortBy { get; set; }
+        public SortDirection SortDirection { get; set; } = SortDirection.ASC;
+        [Range(0, Int32.MaxValue)]
+        public int Offset { get; set; }
     }
 }

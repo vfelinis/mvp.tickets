@@ -52,7 +52,7 @@ export class CategoryStore {
             onlyRoot: false
         };
         this.setIsLoading(true);
-        axios.get<IBaseQueryResponse<ICategoryModel[]>>(ApiRoutesHelper.categories, {params:request})
+        axios.get<IBaseQueryResponse<ICategoryModel[]>>(ApiRoutesHelper.category, {params:request})
             .then(response => {
                 this.setIsLoading(false);
                 if (response.data.isSuccess) {
@@ -74,7 +74,7 @@ export class CategoryStore {
             onlyRoot: true
         };
         this.setIsLoading(true);
-        axios.get<IBaseQueryResponse<ICategoryModel[]>>(ApiRoutesHelper.categories, {params:request})
+        axios.get<IBaseQueryResponse<ICategoryModel[]>>(ApiRoutesHelper.category, {params:request})
             .then(response => {
                 this.setIsLoading(false);
                 if (response.data.isSuccess) {
@@ -92,7 +92,7 @@ export class CategoryStore {
 
     create(request: ICategoryCreateCommandRequest) : void {
         this.setIsLoading(true);
-        axios.post<IBaseCommandResponse<number>>(ApiRoutesHelper.categories, request)
+        axios.post<IBaseCommandResponse<number>>(ApiRoutesHelper.category, request)
             .then(response => {
                 this.setIsLoading(false);
                 if (response.data.isSuccess) {
@@ -114,7 +114,7 @@ export class CategoryStore {
             onlyRoot: false
         };
         this.setIsLoading(true);
-        axios.get<IBaseQueryResponse<ICategoryModel[]>>(ApiRoutesHelper.categories, {params:request})
+        axios.get<IBaseQueryResponse<ICategoryModel[]>>(ApiRoutesHelper.category, {params:request})
             .then(response => {
                 if (response.data.isSuccess) {
                     this.setCategory(response.data.data[0]);
@@ -132,7 +132,7 @@ export class CategoryStore {
 
     update(request: ICategoryUpdateCommandRequest) : void {
         this.setIsLoading(true);
-        axios.put<IBaseCommandResponse<boolean>>(ApiRoutesHelper.categories, request)
+        axios.put<IBaseCommandResponse<boolean>>(ApiRoutesHelper.category, request)
             .then(response => {
                 this.setIsLoading(false);
                 if (response.data.isSuccess) {

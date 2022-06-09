@@ -2,6 +2,6 @@
 {
     public static class ReportConstants
     {
-        public const int DEFAULT_LIMIT = 20;
+        public const int DEFAULT_LIMIT = 30;
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace mvp.tickets.domain.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace mvp.tickets.domain.Models
 {
     public interface ICategoryCreateCommandRequest : IBaseCommandRequest
     {
@@ -8,6 +10,8 @@
     }
     public record CategoryCreateCommandRequest : BaseCommandRequest, ICategoryCreateCommandRequest
     {
+        [Required]
+        [StringLength(maximumLength:100)]
         public string Name { get; set; }
         public bool IsActive { get; set; }
         public int? ParentCategoryId { get; set; }

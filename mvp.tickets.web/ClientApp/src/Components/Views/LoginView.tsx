@@ -64,7 +64,7 @@ const LoginView: FC<ILoginViewProps> = (props) => {
   }, [ready]);
 
   return <>
-    {store.userStore.user !== null ? <Navigate to={UIRoutesHelper.home.getRoute()} replace={true} /> : null}
+    {store.userStore.currentUser !== null ? <Navigate to={UIRoutesHelper.home.getRoute()} replace={true} /> : null}
     <Error />
     <div ref={firebaseuiElement} />
   </>;

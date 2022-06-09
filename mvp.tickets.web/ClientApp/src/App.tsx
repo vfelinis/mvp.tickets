@@ -16,7 +16,7 @@ import TicketsView from './Components/Views/TicketsView';
 import CreateTicketView from './Components/Views/CreateTicketView';
 import EmployeeView from './Components/Views/Employee/EmployeeView';
 import ProtectedRoute from './Components/Shared/ProtectedRoute';
-import { Permissions } from './Models/Permissions';
+import { Permissions } from './Enums/Permissions';
 import AdminUsersView from './Components/Views/Admin/AdminUsersView';
 import AdminCategoriesView from './Components/Views/Admin/AdminCategoriesView';
 import AdminCategoriesCreateView from './Components/Views/Admin/AdminCategoriesCreateView';
@@ -38,7 +38,7 @@ export const App: FC<IAppProps> = (props) => {
 
   useEffect(() => {
     if (props.user !== null) {
-      store.userStore.setUser(props.user);
+      store.userStore.setCurrentUser(props.user);
     }
   }, []);
 

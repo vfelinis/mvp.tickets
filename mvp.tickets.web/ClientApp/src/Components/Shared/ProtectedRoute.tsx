@@ -2,7 +2,7 @@ import { FC } from 'react';
 import { Navigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { UIRoutesHelper } from '../../Helpers/UIRoutesHelper';
-import { hasPermission, Permissions } from '../../Models/Permissions';
+import { hasPermission, Permissions } from '../../Enums/Permissions';
 import { useRootStore } from '../../Store/RootStore';
 import { IUserModel } from '../../Models/User';
 
@@ -14,7 +14,7 @@ interface IProtectedRouteProps {
 
 const ProtectedRoute: FC<IProtectedRouteProps> = (props) => {
     const store = useRootStore();
-    const user = (props.user ?? store.userStore.user);
+    const user = (props.user ?? store.userStore.currentUser);
     if (user === null) {
         return <Navigate to={UIRoutesHelper.login.getRoute()} replace={true} />;
     }

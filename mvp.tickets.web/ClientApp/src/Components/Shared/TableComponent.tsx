@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
@@ -14,6 +14,11 @@ import { visuallyHidden } from '@mui/utils';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 import IconButton from '@mui/material/IconButton';
+import { SortDirection } from '../../Enums/SortDirection';
+import TablePagination from '@mui/material/TablePagination';
+import debounce from 'lodash/debounce';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 
 interface ITableComponentProps {
     table: ITable
@@ -26,16 +31,39 @@ export enum ColumnType {
     Boolean = 4
 }
 
+interface ITableColumnValueFormater {
+    (value: any): string;
+}
+
+interface ITableColumnSearchOption {
+    id: string
+    name: string
+}
+
+export const tableColumnBooleanSearchOptions: ITableColumnSearchOption[] = [
+    { id: 'True', name: "да" },
+    { id: 'False', name: "нет" },
+];
+
 interface ITableColumn {
     field: string
     label: string
     type: ColumnType
-    sortable: boolean
+    sortable?: boolean
+    searchable?: boolean
+    searchOptions?: ITableColumnSearchOption[] | undefined
+    valueFormater?: ITableColumnValueFormater | undefined
+}
+
+interface IActionHandle {
+    (searchBy: object, offset: number, sortBy: string, direction: SortDirection): void;
 }
 
 interface ITableOptions {
-    sortable: boolean
+    isServerSide: boolean
+    total: number
     editRoute: Function | undefined
+    actionHandle?: IActionHandle | undefined
 }
 
 interface ITable {
@@ -45,8 +73,11 @@ interface ITable {
 }
 
 const TableComponent: FC<ITableComponentProps> = (props) => {
-    const [direction, setDirection] = useState(1);
-    const [orderBy, setOrderBy] = useState(props.table.columns[0].field);
+    const [direction, setDirection] = useState(SortDirection.ASC);
+    const [searchBy, setSearchBy] = useState({});
+    const [page, setPage] = useState(0);
+    const [sortBy, setSortBy] = useState(props.table.columns[0].field);
+    const limit = 30;
 
     const getValue = (item: any, column: ITableColumn): any => {
         return column.type === ColumnType.Date
@@ -55,24 +86,52 @@ const TableComponent: FC<ITableComponentProps> = (props) => {
     };
 
     const getFormatedValue = (item: any, column: ITableColumn): any => {
+        let value: any;
         switch (column.type) {
             case ColumnType.Date:
-                return formatDistanceToNow(new Date(item[column.field]), { addSuffix: true, locale: ru });
+                value = formatDistanceToNow(new Date(item[column.field]), { addSuffix: true, locale: ru });
+                break;
             case ColumnType.Boolean:
-                return item[column.field] === true ? 'да' : 'нет';
+                value = item[column.field] === true ? 'да' : 'нет';
+                break;
             default:
-                return item[column.field];
+                value = item[column.field];
+                break;
         }
+        return column.valueFormater !== undefined
+            ? column.valueFormater(value)
+            : value;
     };
 
-    const order = direction === 1 ? 'asc' : 'desc';
+    const order = direction === SortDirection.ASC ? 'asc' : 'desc';
 
-    const sort = (field: string): void => {
+    const handleSort = (field: string): void => {
+        if (props.table.options.isServerSide && props.table.options.actionHandle !== undefined) {
+            props.table.options.actionHandle(searchBy, getOffset(page), field, direction * -1);
+        }
         setDirection(direction * -1);
-        setOrderBy(field);
+        setSortBy(field);
     };
 
-    const sortedColumn = props.table.columns.find(s => s.field === orderBy);
+    const handleSearch = (field: string, value: any): void => {
+        const newSearchBy = { ...searchBy, [field]: value };
+        if (props.table.options.isServerSide && props.table.options.actionHandle !== undefined) {
+            props.table.options.actionHandle(newSearchBy, getOffset(page), sortBy, direction);
+        }
+        setSearchBy(newSearchBy);
+    };
+
+    const debouncedHandleSearch = useMemo(
+        () => debounce(handleSearch, 1000)
+        , []);
+
+    useEffect(() => {
+        return () => {
+            debouncedHandleSearch.cancel();
+        }
+    }, []);
+
+    const sortedColumn = props.table.columns.find(s => s.field === sortBy);
 
     let sortedRows = props.table.rows;
     if (sortedColumn) {
@@ -83,31 +142,102 @@ const TableComponent: FC<ITableComponentProps> = (props) => {
         });
     }
 
+    const getOffset = (page: number): number => (page) * limit;
+
+    const handleChangePage = (
+        event: React.MouseEvent<HTMLButtonElement> | null,
+        newPage: number,
+    ) => {
+        if (props.table.options.isServerSide && props.table.options.actionHandle !== undefined) {
+            props.table.options.actionHandle(searchBy, getOffset(newPage), sortBy, direction);
+        }
+        setPage(newPage);
+    };
+
+    if (props.table.options.isServerSide === false) {
+        sortedRows = sortedRows.filter(s => {
+            let success = true;
+            for (let [key, value] of Object.entries(searchBy)) {
+                if (value) {
+                    if (typeof s[key] === typeof Boolean) {
+                        if (s[key] !== (value === 'True' ? true : false)) {
+                            success = false;
+                        }
+                    } else if (`${s[key]}`.indexOf(`${value}`.toLowerCase()) === -1) {
+                        success = false;
+                    }
+                }
+            }
+            return success;
+        }).splice(getOffset(page), limit);
+    }
+
     return <>
+        <TablePagination
+            component="div"
+            count={props.table.options.total}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={limit}
+            rowsPerPageOptions={[limit]}
+            labelDisplayedRows={(data: any): string => `${data.from}–${data.to} из ${data.count !== -1 ? data.count : `больше чем ${data.to}`}`}
+        />
         <TableContainer sx={{ mt: 2 }} component={Paper}>
             <Table>
                 <TableHead>
                     <TableRow>
                         {props.table.columns.map((column, i) => {
-                            return props.table.options.sortable && column.sortable
+                            const label = column.searchOptions === undefined
+                                ? <TextField
+                                    label={column.label}
+                                    variant="standard"
+                                    type="search"
+                                    disabled={column.searchable !== true}
+                                    onChange={(e) => props.table.options.isServerSide === false
+                                        ? handleSearch(column.field, e.currentTarget.value)
+                                        : debouncedHandleSearch(column.field, e.currentTarget.value)
+                                    }
+                                    onClick={(e) => e.stopPropagation()}
+                                />
+                                : <Autocomplete
+                                    forcePopupIcon={false}
+                                    componentsProps={{
+                                        paper: {
+                                            sx: {
+                                                minWidth: 200,
+                                                wordBreak: 'break-all'
+                                            }
+                                        }
+                                    }}
+                                    options={column.searchOptions.slice().sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))}
+                                    getOptionLabel={option => option.name}
+                                    onChange={(event, value) => handleSearch(column.field, value?.id)}
+                                    isOptionEqualToValue={(option, value) => option.id === value.id}
+                                    renderInput={(params) => <TextField {...params} label={column.label} variant="standard" />}
+                                />;
+                            return column.sortable
                                 ? <TableCell
                                     key={i}
-                                    sortDirection={orderBy === column.field ? order : false}
+                                    sortDirection={sortBy === column.field ? order : false}
+                                    sx={{ minWidth: 150 }}
                                 >
+
                                     <TableSortLabel
-                                        active={orderBy === column.field}
-                                        direction={orderBy === column.field ? order : 'asc'}
-                                        onClick={() => sort(column.field)}
+                                        active={sortBy === column.field}
+                                        direction={sortBy === column.field ? order : 'asc'}
+                                        onClick={() => handleSort(column.field)}
                                     >
-                                        {column.label}
-                                        {orderBy === column.field ? (
+                                        {sortBy === column.field ? (
                                             <Box component="span" sx={visuallyHidden}>
                                                 {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                             </Box>
                                         ) : null}
+                                        {label}
                                     </TableSortLabel>
                                 </TableCell>
-                                : <TableCell>{column.label}</TableCell>;
+                                : <TableCell key={i} sx={{ minWidth: 150 }}>
+                                    {label}
+                                </TableCell>;
                         })}
                         {props.table.options.editRoute && <TableCell></TableCell>}
                     </TableRow>
@@ -121,7 +251,7 @@ const TableComponent: FC<ITableComponentProps> = (props) => {
                             {props.table.columns.map((column, i) => (
                                 <TableCell key={i}>{getFormatedValue(row, column)}</TableCell>
                             ))}
-                            {props.table.options.editRoute &&
+                            {props.table.options.editRoute !== undefined &&
                                 <TableCell>
                                     <IconButton component={Link} to={props.table.options.editRoute(row)}>
                                         <EditIcon />

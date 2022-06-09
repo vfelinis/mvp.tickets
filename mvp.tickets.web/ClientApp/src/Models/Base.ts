@@ -1,16 +1,18 @@
-export enum ResponseCodes {
-    Unknown = 0,
-    Success = 200,
-    BadRequest = 400,
-    Unauthorized = 401,
-    NotFound = 404,
-    Error = 500,
-}
+import { ResponseCodes } from '../Enums/ResponseCodes';
+import { SortDirection } from '../Enums/SortDirection';
 
 export interface IBaseResponse {
     isSuccess: boolean,
     code: ResponseCodes,
     errorMessage: string,
+}
+
+export interface IBaseReportQueryRequest
+{
+    searchBy: object | null
+    sortBy: string
+    sortDirection: SortDirection
+    offset: number
 }
 
 export interface IBaseCommandResponse<T> extends IBaseResponse {

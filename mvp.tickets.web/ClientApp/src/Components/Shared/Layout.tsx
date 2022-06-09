@@ -27,7 +27,7 @@ import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import Error from './Error';
 import { useRootStore } from '../../Store/RootStore';
 import { UIRoutesHelper } from '../../Helpers/UIRoutesHelper';
-import { hasPermission, Permissions } from '../../Models/Permissions';
+import { hasPermission, Permissions } from '../../Enums/Permissions';
 import { CircularProgress, Menu, MenuItem } from '@mui/material';
 
 const drawerWidth = 240;
@@ -232,7 +232,7 @@ const Layout: FC<ILayoutProps> = (props) => {
                     </ListItem>
                 </List>
                 {
-                    store.userStore.user != null && hasPermission(store.userStore.user.permissions, Permissions.Admin) &&
+                    store.userStore.currentUser != null && hasPermission(store.userStore.currentUser.permissions, Permissions.Admin) &&
                     <>
                         <Divider />
                         <List>
@@ -306,7 +306,7 @@ const Layout: FC<ILayoutProps> = (props) => {
                     </>
                 }
                 {
-                    store.userStore.user != null && hasPermission(store.userStore.user.permissions, Permissions.Employee) &&
+                    store.userStore.currentUser != null && hasPermission(store.userStore.currentUser.permissions, Permissions.Employee) &&
                     <>
                         <Divider />
                         <List>

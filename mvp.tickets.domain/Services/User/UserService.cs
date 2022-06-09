@@ -80,7 +80,8 @@ namespace mvp.tickets.domain.Services
                         Email = email,
                         FirstName = name?.Split(' ').First(),
                         LastName = name?.Split(' ').Last(),
-                        Permissions = Permissions.User
+                        Permissions = Permissions.User,
+                        IsLocked = false
                     }).ConfigureAwait(false);
 
                     userModel = createResponse.Data;
@@ -128,7 +129,7 @@ namespace mvp.tickets.domain.Services
             return response;
         }
 
-        public async Task<IBaseReportQueryResponse<IEnumerable<IUserModel>>> GetUsersReport(IBaseReportQueryRequest request)
+        public async Task<IBaseReportQueryResponse<IEnumerable<IUserModel>>> GetReport(IBaseReportQueryRequest request)
         {
             if (request == null)
             {
@@ -143,7 +144,7 @@ namespace mvp.tickets.domain.Services
 
             try
             {
-                response = await _userStore.GetUsers(request).ConfigureAwait(false);
+                response = await _userStore.GetReport(request).ConfigureAwait(false);
             }
             catch (Exception ex)
             {
