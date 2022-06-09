@@ -75,10 +75,8 @@ const AdminUsersView: FC<IAdminUsersViewProps> = (props) => {
                     field: 'isLocked', label: 'Заблокирован', type: ColumnType.Boolean, sortable: false, searchable: true,
                     searchOptions: tableColumnBooleanSearchOptions
                 },
-                // { field: 'dateCreated', label: 'Создан', type: ColumnType.Date, sortable: true },
-                // { field: 'dateModified', label: 'Обновлен', type: ColumnType.Date, sortable: true },
             ],
-            rows: [...store.userStore.report]
+            rows: store.userStore.report
         }} />
     </>;
 };

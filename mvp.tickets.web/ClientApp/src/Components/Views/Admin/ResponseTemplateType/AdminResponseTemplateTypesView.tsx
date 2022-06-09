@@ -37,7 +37,7 @@ const AdminResponseTemplateTypesView: FC<IAdminResponseTemplateTypesViewProps> =
                     searchOptions: tableColumnBooleanSearchOptions
                 },
             ],
-            rows: [...store.responseTemplateTypeStore.entries]
+            rows: store.responseTemplateTypeStore.entries
         }} />
     </>;
 };

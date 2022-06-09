@@ -44,7 +44,7 @@ const AdminStatusesView: FC<IAdminStatusesViewProps> = (props) => {
                     searchOptions: tableColumnBooleanSearchOptions
                 },
             ],
-            rows: [...store.statusStore.entries]
+            rows: store.statusStore.entries
         }} />
     </>;
 };

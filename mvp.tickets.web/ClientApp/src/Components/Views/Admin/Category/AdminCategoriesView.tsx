@@ -43,7 +43,7 @@ const AdminCategoriesView: FC<IAdminCategoriesViewProps> = (props) => {
                     searchOptions: tableColumnBooleanSearchOptions
                 },
             ],
-            rows: [...store.categoryStore.categories]
+            rows: store.categoryStore.categories
         }} />
     </>;
 };

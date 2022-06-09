@@ -38,7 +38,7 @@ const AdminPrioritiesView: FC<IAdminPrioritiesViewProps> = (props) => {
                     searchOptions: tableColumnBooleanSearchOptions
                 },
             ],
-            rows: [...store.priorityStore.entries]
+            rows: store.priorityStore.entries
         }} />
     </>;
 };

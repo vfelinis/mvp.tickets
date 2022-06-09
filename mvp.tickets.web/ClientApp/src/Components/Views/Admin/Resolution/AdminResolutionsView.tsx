@@ -37,7 +37,7 @@ const AdminResolutionsView: FC<IAdminResolutionsViewProps> = (props) => {
                     searchOptions: tableColumnBooleanSearchOptions
                 },
             ],
-            rows: [...store.resolutionStore.entries]
+            rows: store.resolutionStore.entries
         }} />
     </>;
 };

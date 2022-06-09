@@ -116,9 +116,10 @@ const TableComponent: FC<ITableComponentProps> = (props) => {
     const handleSearch = (field: string, value: any): void => {
         const newSearchBy = { ...searchBy, [field]: value };
         if (props.table.options.isServerSide && props.table.options.actionHandle !== undefined) {
-            props.table.options.actionHandle(newSearchBy, getOffset(page), sortBy, direction);
+            props.table.options.actionHandle(newSearchBy, 0, sortBy, direction);
         }
         setSearchBy(newSearchBy);
+        setPage(0);
     };
 
     const debouncedHandleSearch = useMemo(
@@ -133,7 +134,7 @@ const TableComponent: FC<ITableComponentProps> = (props) => {
 
     const sortedColumn = props.table.columns.find(s => s.field === sortBy);
 
-    let sortedRows = props.table.rows;
+    let sortedRows = [...props.table.rows];
     if (sortedColumn) {
         sortedRows = sortedRows.sort((a: any, b: any) => {
             const aValue = getValue(a, sortedColumn);
@@ -154,28 +155,33 @@ const TableComponent: FC<ITableComponentProps> = (props) => {
         setPage(newPage);
     };
 
+    let total = props.table.options.total;
     if (props.table.options.isServerSide === false) {
-        sortedRows = sortedRows.filter(s => {
-            let success = true;
-            for (let [key, value] of Object.entries(searchBy)) {
-                if (value) {
-                    if (typeof s[key] === typeof Boolean) {
-                        if (s[key] !== (value === 'True' ? true : false)) {
+        if (Object.entries(searchBy).some(s => s[1])) {
+            sortedRows = sortedRows.filter(s => {
+                let success = true;
+                for (let [key, value] of Object.entries(searchBy)) {
+                    if (value) {
+                        if (typeof s[key] === typeof Boolean) {
+                            if (s[key] !== (value === 'True' ? true : false)) {
+                                success = false;
+                            }
+                        } else if (`${s[key]}`.indexOf(`${value}`.toLowerCase()) === -1) {
                             success = false;
                         }
-                    } else if (`${s[key]}`.indexOf(`${value}`.toLowerCase()) === -1) {
-                        success = false;
                     }
                 }
-            }
-            return success;
-        }).splice(getOffset(page), limit);
+                return success;
+            });
+            total = sortedRows.length;
+        }
+        sortedRows = sortedRows.splice(getOffset(page), limit);
     }
 
     return <>
         <TablePagination
             component="div"
-            count={props.table.options.total}
+            count={total}
             page={page}
             onPageChange={handleChangePage}
             rowsPerPage={limit}

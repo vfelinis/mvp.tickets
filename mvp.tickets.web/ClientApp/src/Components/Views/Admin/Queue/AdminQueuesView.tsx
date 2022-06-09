@@ -41,7 +41,7 @@ const AdminQueuesView: FC<IAdminQueuesViewProps> = (props) => {
                     searchOptions: tableColumnBooleanSearchOptions
                 },
             ],
-            rows: [...store.queueStore.entries]
+            rows: store.queueStore.entries
         }} />
     </>;
 };
