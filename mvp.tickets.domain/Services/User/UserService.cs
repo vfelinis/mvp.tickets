@@ -106,9 +106,8 @@ namespace mvp.tickets.domain.Services
                 if (userModel.Permissions.HasFlag(Permissions.Admin))
                 {
                     claims.Add(new Claim(AuthConstants.AdminClaim, "true"));
-                    claims.Add(new Claim(AuthConstants.EmployeeClaim, "true"));
                 }
-                else if (userModel.Permissions.HasFlag(Permissions.Employee))
+                if (userModel.Permissions.HasFlag(Permissions.Employee))
                 {
                     claims.Add(new Claim(AuthConstants.EmployeeClaim, "true"));
                 }

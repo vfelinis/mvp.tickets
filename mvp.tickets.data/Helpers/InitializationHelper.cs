@@ -29,7 +29,7 @@ namespace mvp.tickets.data.Helpers
                             FirstName = "Admin",
                             LastName = "Admin",
                             IsLocked = false,
-                            Permissions = domain.Enums.Permissions.Admin,
+                            Permissions = domain.Enums.Permissions.Admin | domain.Enums.Permissions.Employee | domain.Enums.Permissions.User,
                             DateCreated = DateTimeOffset.Now,
                             DateModified = DateTimeOffset.Now
                         });

@@ -3,8 +3,9 @@
     [Flags]
     public enum Permissions
     {
-        User     = 0b000000000,
-        Admin    = 0b000000001,
-        Employee = 0b000000010
+        None     = 0b000000000,
+        User     = 0b000000001,
+        Admin    = 0b000000010,
+        Employee = 0b000000100
     }
 }

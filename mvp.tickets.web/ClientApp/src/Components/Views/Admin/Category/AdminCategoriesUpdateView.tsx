@@ -1,11 +1,11 @@
-import { Autocomplete, Box, Button, ButtonGroup, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
+import { Autocomplete, Box, Button, FormControlLabel, Switch, TextField, Typography } from '@mui/material';
 import { FC, useState, useEffect, useLayoutEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { UIRoutesHelper } from '../../../Helpers/UIRoutesHelper';
-import { ICategoryModel, ICategoryUpdateCommandRequest } from '../../../Models/Category';
-import { useRootStore } from '../../../Store/RootStore';
+import { UIRoutesHelper } from '../../../../Helpers/UIRoutesHelper';
+import { ICategoryModel, ICategoryUpdateCommandRequest } from '../../../../Models/Category';
+import { useRootStore } from '../../../../Store/RootStore';
 
 interface IAdminCategoriesUpdateViewProps {
 }
@@ -69,7 +69,7 @@ const AdminCategoriesUpdateView: FC<IAdminCategoriesUpdateViewProps> = (props) =
             />
             <FormControlLabel
                 control={<Switch checked={category.isActive} onChange={(e) => setCategory({ ...category, isActive: e.currentTarget.checked })} />}
-                label="Активная категория" />
+                label="Активная запись" />
             <Autocomplete
                 disablePortal
                 value={selectedParent}

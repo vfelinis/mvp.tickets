@@ -4,6 +4,7 @@ export interface ICategoryModel {
     isRoot: boolean,
     isActive: boolean,
     parentCategoryId: number | null,
+    parentCategory: string,
     dateCreated: Date,
     dateModified: Date,
 }

@@ -3,6 +3,8 @@ export class UIRoutesHelper {
         path: '/',
         getRoute: () => `${this.home.path}`,
     };
+
+
     static tickets: IRoute = {
         path: 'tickets',
         getRoute: () => `/${this.tickets.path}/`,
@@ -15,6 +17,8 @@ export class UIRoutesHelper {
         path: 'tickets/:id',
         getRoute: (id: number) => `/${this.ticketsUpdate.path.replace(":id", id.toString())}/`,
     };
+
+
     static adminUsers: IRoute = {
         path: 'admin/users',
         getRoute: () => `/${this.adminUsers.path}/`,
@@ -27,6 +31,8 @@ export class UIRoutesHelper {
         path: 'admin/users/:id',
         getRoute: (id: number) => `/${this.adminUsersUpdate.path.replace(":id", id.toString())}/`,
     };
+
+
     static adminCategories: IRoute = {
         path: 'admin/categories',
         getRoute: () => `/${this.adminCategories.path}/`,
@@ -39,6 +45,8 @@ export class UIRoutesHelper {
         path: 'admin/categories/:id',
         getRoute: (id: number) => `/${this.adminCategoriesUpdate.path.replace(":id", id.toString())}/`,
     };
+
+
     static adminPriorities: IRoute = {
         path: 'admin/priorities',
         getRoute: () => `/${this.adminPriorities.path}/`,
@@ -51,6 +59,8 @@ export class UIRoutesHelper {
         path: 'admin/priorities/:id',
         getRoute: (id: number) => `/${this.adminPrioritiesUpdate.path.replace(":id", id.toString())}/`,
     };
+
+
     static adminQueues: IRoute = {
         path: 'admin/queues',
         getRoute: () => `/${this.adminQueues.path}/`,
@@ -63,18 +73,22 @@ export class UIRoutesHelper {
         path: 'admin/queues/:id',
         getRoute: (id: number) => `/${this.adminQueuesUpdate.path.replace(":id", id.toString())}/`,
     };
-    static adminStatusRules: IRoute = {
-        path: 'admin/statusrules',
-        getRoute: () => `/${this.adminStatusRules.path}/`,
-    };
-    static adminStatusRulesCreate: IRoute = {
-        path: 'admin/statusrules/create',
-        getRoute: () => `/${this.adminStatusRulesCreate.path}/`,
-    };
-    static adminStatusRulesUpdate: IRoute = {
-        path: 'admin/statusrules/:id',
-        getRoute: (id: number) => `/${this.adminStatusRulesUpdate.path.replace(":id", id.toString())}/`,
-    };
+
+
+    // static adminStatusRules: IRoute = {
+    //     path: 'admin/statusrules',
+    //     getRoute: () => `/${this.adminStatusRules.path}/`,
+    // };
+    // static adminStatusRulesCreate: IRoute = {
+    //     path: 'admin/statusrules/create',
+    //     getRoute: () => `/${this.adminStatusRulesCreate.path}/`,
+    // };
+    // static adminStatusRulesUpdate: IRoute = {
+    //     path: 'admin/statusrules/:id',
+    //     getRoute: (id: number) => `/${this.adminStatusRulesUpdate.path.replace(":id", id.toString())}/`,
+    // };
+
+
     static adminStatuses: IRoute = {
         path: 'admin/statuses',
         getRoute: () => `/${this.adminStatuses.path}/`,
@@ -87,6 +101,8 @@ export class UIRoutesHelper {
         path: 'admin/statuses/:id',
         getRoute: (id: number) => `/${this.adminStatusesUpdate.path.replace(":id", id.toString())}/`,
     };
+
+
     static adminResolutions: IRoute = {
         path: 'admin/resolutions',
         getRoute: () => `/${this.adminResolutions.path}/`,
@@ -99,38 +115,48 @@ export class UIRoutesHelper {
         path: 'admin/resolutions/:id',
         getRoute: (id: number) => `/${this.adminResolutionsUpdate.path.replace(":id", id.toString())}/`,
     };
-    static adminTemplateTypes: IRoute = {
-        path: 'admin/templatetypes',
-        getRoute: () => `/${this.adminTemplateTypes.path}/`,
+
+
+    static adminResponseTemplateTypes: IRoute = {
+        path: 'admin/responseTemplateTypes',
+        getRoute: () => `/${this.adminResponseTemplateTypes.path}/`,
     };
-    static adminTemplateTypesCreate: IRoute = {
-        path: 'admin/templatetypes/create',
-        getRoute: () => `/${this.adminTemplateTypesCreate.path}/`,
+    static adminResponseTemplateTypesCreate: IRoute = {
+        path: 'admin/responseTemplateTypes/create',
+        getRoute: () => `/${this.adminResponseTemplateTypesCreate.path}/`,
     };
-    static adminTemplateTypesUpdate: IRoute = {
-        path: 'admin/templatetypes/:id',
-        getRoute: (id: number) => `/${this.adminTemplateTypesUpdate.path.replace(":id", id.toString())}/`,
+    static adminResponseTemplateTypesUpdate: IRoute = {
+        path: 'admin/responseTemplateTypes/:id',
+        getRoute: (id: number) => `/${this.adminResponseTemplateTypesUpdate.path.replace(":id", id.toString())}/`,
     };
-    static adminTemplates: IRoute = {
-        path: 'admin/templates',
-        getRoute: () => `/${this.adminTemplates.path}/`,
+
+
+    static adminResponseTemplates: IRoute = {
+        path: 'admin/responseTemplates',
+        getRoute: () => `/${this.adminResponseTemplates.path}/`,
     };
-    static adminTemplatesCreate: IRoute = {
-        path: 'admin/templates/create',
-        getRoute: () => `/${this.adminTemplatesCreate.path}/`,
+    static adminResponseTemplatesCreate: IRoute = {
+        path: 'admin/responseTemplates/create',
+        getRoute: () => `/${this.adminResponseTemplatesCreate.path}/`,
     };
-    static adminTemplatesUpdate: IRoute = {
-        path: 'admin/templates/:id',
-        getRoute: (id: number) => `/${this.adminTemplatesUpdate.path.replace(":id", id.toString())}/`,
+    static adminResponseTemplatesUpdate: IRoute = {
+        path: 'admin/responseTemplates/:id',
+        getRoute: (id: number) => `/${this.adminResponseTemplatesUpdate.path.replace(":id", id.toString())}/`,
     };
+
+
     static employee: IRoute = {
         path: 'employee',
         getRoute: () => `/${this.employee.path}/`,
     };
+
+
     static login: IRoute = {
         path: 'login',
         getRoute: () => `/${this.login.path}/`,
     };
+
+    
     static notFound: IRoute = {
         path: '404',
         getRoute: () => `/${this.notFound.path}/`,

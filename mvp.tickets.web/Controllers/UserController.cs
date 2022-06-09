@@ -93,17 +93,19 @@ namespace mvp.tickets.web.Controllers
             IBaseQueryResponse<IUserModel> response = default;
             try
             {
-                var user = await _dbContext.Users.Select(s => new UserModel
-                {
-                    Id = id,
-                    Email = s.Email,
-                    FirstName = s.FirstName,
-                    LastName = s.LastName,
-                    Permissions = s.Permissions,
-                    IsLocked = s.IsLocked,
-                    DateCreated = s.DateCreated,
-                    DateModified = s.DateModified
-                }).FirstOrDefaultAsync(s => s.Id == id);
+                var user = await _dbContext.Users
+                    .Where(s => s.Id == id)
+                    .Select(s => new UserModel
+                    {
+                        Id = id,
+                        Email = s.Email,
+                        FirstName = s.FirstName,
+                        LastName = s.LastName,
+                        Permissions = s.Permissions,
+                        IsLocked = s.IsLocked,
+                        DateCreated = s.DateCreated,
+                        DateModified = s.DateModified
+                    }).FirstOrDefaultAsync();
 
                 response = user != null
                     ? new BaseQueryResponse<IUserModel>
@@ -238,7 +240,7 @@ namespace mvp.tickets.web.Controllers
                     {
                         IsSuccess = false,
                         Code = domain.Enums.ResponseCodes.NotFound,
-                        ErrorMessage = $"Пользователь с электронным адресом {email} уже существует."
+                        ErrorMessage = $"Пользователь с почтой {email} уже существует."
                     };
                 }
                 

@@ -37,6 +37,7 @@ export class UserStore {
             setEditableUser: action,
             getDataForUpdateForm: action,
             update: action,
+            setIsLoading: action,
         });
     }
 

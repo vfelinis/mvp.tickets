@@ -11,4 +11,10 @@ export class ApiRoutesHelper {
     };
 
     static category = '/api/categories/';
+    static priority = '/api/priorities/';
+    static queue = '/api/queues/';
+    static resolution = '/api/resolutions/';
+    static responseTemplate = '/api/responseTemplates/';
+    static responseTemplateType = '/api/responseTemplateTypes/';
+    static status = '/api/statuses/';
 }

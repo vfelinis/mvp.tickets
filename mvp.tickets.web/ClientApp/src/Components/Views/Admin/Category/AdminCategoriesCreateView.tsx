@@ -3,9 +3,9 @@ import { FC, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { UIRoutesHelper } from '../../../Helpers/UIRoutesHelper';
-import { ICategoryCreateCommandRequest } from '../../../Models/Category';
-import { useRootStore } from '../../../Store/RootStore';
+import { UIRoutesHelper } from '../../../../Helpers/UIRoutesHelper';
+import { ICategoryCreateCommandRequest } from '../../../../Models/Category';
+import { useRootStore } from '../../../../Store/RootStore';
 
 interface IAdminCategoriesCreateViewProps {
 }
@@ -48,7 +48,7 @@ const AdminCategoriesCreateView: FC<IAdminCategoriesCreateViewProps> = (props) =
             />
             <FormControlLabel
                 control={<Switch checked={category.isActive} onChange={(e) => setCategory({ ...category, isActive: e.currentTarget.checked })} />}
-                label="Активная категория" />
+                label="Активная запись" />
             <Autocomplete
                 disablePortal
                 options={store.categoryStore.categories.slice().sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))}

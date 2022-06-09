@@ -9,7 +9,7 @@ namespace mvp.tickets.domain.Extensions
         {
             response.IsSuccess = false;
             response.Code = ResponseCodes.Error;
-            response.ErrorMessage = ex.Message;
+            response.ErrorMessage = $"{ex.Message}. {ex.InnerException?.Message}";
         }
     }
 }

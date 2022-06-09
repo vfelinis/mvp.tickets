@@ -560,11 +560,16 @@ namespace mvp.tickets.data.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("TicketResponseTemplateType", "dbo");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("TicketResponseTemplateTypes", "dbo");
                 });
 
             modelBuilder.Entity("mvp.tickets.data.Models.TicketStatus", b =>
@@ -708,9 +713,6 @@ namespace mvp.tickets.data.Migrations
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
 
                     b.Property<bool>("IsLocked")
                         .HasColumnType("bit");

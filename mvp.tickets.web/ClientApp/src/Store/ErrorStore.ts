@@ -11,6 +11,7 @@ export class ErrorStore {
         makeObservable(this, {
             errors: observable,
             setError: action,
+            clearErrors: action,
         });
     }
 

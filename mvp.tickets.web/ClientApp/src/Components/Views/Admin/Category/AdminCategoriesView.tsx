@@ -3,10 +3,10 @@ import { observer } from 'mobx-react-lite';
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { UIRoutesHelper } from '../../../Helpers/UIRoutesHelper';
-import { useRootStore } from '../../../Store/RootStore';
-import { ICategoryModel } from '../../../Models/Category';
-import TableComponent, { ColumnType, tableColumnBooleanSearchOptions } from '../../Shared/TableComponent';
+import { UIRoutesHelper } from '../../../../Helpers/UIRoutesHelper';
+import { useRootStore } from '../../../../Store/RootStore';
+import { ICategoryModel } from '../../../../Models/Category';
+import TableComponent, { ColumnType, tableColumnBooleanSearchOptions } from '../../../Shared/TableComponent';
 
 
 interface IAdminCategoriesViewProps {
@@ -33,16 +33,15 @@ const AdminCategoriesView: FC<IAdminCategoriesViewProps> = (props) => {
             columns: [
                 { field: 'id', label: 'Id', type: ColumnType.Number, sortable: true, searchable: true },
                 { field: 'name', label: 'Название', type: ColumnType.String, sortable: true, searchable: true },
+                { field: 'parentCategory', label: 'Родитель', type: ColumnType.String, sortable: true, searchable: true },
                 {
-                    field: 'isRoot', label: 'Корневая', type: ColumnType.Boolean, sortable: false, searchable: this,
+                    field: 'isRoot', label: 'Корневая', type: ColumnType.Boolean, sortable: false, searchable: true,
                     searchOptions: tableColumnBooleanSearchOptions
                 },
                 {
-                    field: 'isActive', label: 'Активная', type: ColumnType.Boolean, sortable: false, searchable: this,
+                    field: 'isActive', label: 'Активная запись', type: ColumnType.Boolean, sortable: false, searchable: true,
                     searchOptions: tableColumnBooleanSearchOptions
                 },
-                // { field: 'dateCreated', label: 'Создана', type: ColumnType.Date, sortable: true },
-                // { field: 'dateModified', label: 'Обновлена', type: ColumnType.Date, sortable: true },
             ],
             rows: [...store.categoryStore.categories]
         }} />

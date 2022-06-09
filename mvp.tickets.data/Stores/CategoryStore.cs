@@ -91,7 +91,13 @@ namespace mvp.tickets.data.Stores
                 };
             }
 
-            var category = await _dbContext.TicketCategories.FirstOrDefaultAsync(s => s.Id == request.Id).ConfigureAwait(false);
+            var queryable = _dbContext.TicketCategories.AsQueryable();
+            if (request.ParentCategoryId != null)
+            {
+                queryable = queryable.Include(s => s.SubCategories);
+            }
+
+            var category = await queryable.FirstOrDefaultAsync(s => s.Id == request.Id).ConfigureAwait(false);
             if (category == null)
             {
                 return new BaseCommandResponse<bool>
@@ -100,6 +106,14 @@ namespace mvp.tickets.data.Stores
                     Code = ResponseCodes.NotFound,
                     Data = false
                 };
+            }
+
+            if (request.ParentCategoryId != null)
+            {
+                category.SubCategories.ForEach(s =>
+                {
+                    s.ParentCategoryId = request.ParentCategoryId;
+                });
             }
 
             request.ParentCategoryId = request.ParentCategoryId != request.Id ? request.ParentCategoryId : null;

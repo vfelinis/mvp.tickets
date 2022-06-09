@@ -127,19 +127,19 @@ const Layout: FC<ILayoutProps> = (props) => {
         setAnchorAdminEl(null);
     };
 
-    const isLoading = store.categoryStore.isLoading;
+    const isLoading = store.categoryStore.isLoading || store.userStore.isLoading;
 
     return <>
         {isLoading && <Box sx={{
-                position: 'absolute',
-                display: 'flex',
-                width: '100%',
-                height: '100vh',
-                alignItems: 'center',
-                justifyContent: 'center',
-                backgroundColor: 'black',
-                zIndex: '10000',
-                opacity: 0.6,
+            position: 'absolute',
+            display: 'flex',
+            width: '100%',
+            height: '100vh',
+            alignItems: 'center',
+            justifyContent: 'center',
+            backgroundColor: 'black',
+            zIndex: '10000',
+            opacity: 0.6,
         }}><CircularProgress /></Box>}
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
@@ -190,46 +190,51 @@ const Layout: FC<ILayoutProps> = (props) => {
                             <ListItemText primary="Главная" sx={{ opacity: open ? 1 : 0 }} />
                         </ListItemButton>
                     </ListItem>
-                    <ListItem key="Мои заявки" disablePadding sx={{ display: 'block' }} onClick={() => navigate(UIRoutesHelper.tickets.getRoute(), { replace: true })}>
-                        <ListItemButton
-                            sx={{
-                                minHeight: 48,
-                                justifyContent: open ? 'initial' : 'center',
-                                px: 2.5,
-                            }}
-                        >
-                            <ListItemIcon
-                                sx={{
-                                    minWidth: 0,
-                                    mr: open ? 3 : 'auto',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <ViewListIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Мои заявки" sx={{ opacity: open ? 1 : 0 }} />
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem key="Создавать заявку" disablePadding sx={{ display: 'block' }} onClick={() => navigate(UIRoutesHelper.ticketsCreate.getRoute(), { replace: true })}>
-                        <ListItemButton
-                            sx={{
-                                minHeight: 48,
-                                justifyContent: open ? 'initial' : 'center',
-                                px: 2.5,
-                            }}
-                        >
-                            <ListItemIcon
-                                sx={{
-                                    minWidth: 0,
-                                    mr: open ? 3 : 'auto',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <PlaylistAddIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Создать заявку" sx={{ opacity: open ? 1 : 0 }} />
-                        </ListItemButton>
-                    </ListItem>
+                    {
+                        store.userStore.currentUser != null && hasPermission(store.userStore.currentUser.permissions, Permissions.User) &&
+                        <>
+                            <ListItem key="Мои заявки" disablePadding sx={{ display: 'block' }} onClick={() => navigate(UIRoutesHelper.tickets.getRoute(), { replace: true })}>
+                                <ListItemButton
+                                    sx={{
+                                        minHeight: 48,
+                                        justifyContent: open ? 'initial' : 'center',
+                                        px: 2.5,
+                                    }}
+                                >
+                                    <ListItemIcon
+                                        sx={{
+                                            minWidth: 0,
+                                            mr: open ? 3 : 'auto',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        <ViewListIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Мои заявки" sx={{ opacity: open ? 1 : 0 }} />
+                                </ListItemButton>
+                            </ListItem>
+                            <ListItem key="Создавать заявку" disablePadding sx={{ display: 'block' }} onClick={() => navigate(UIRoutesHelper.ticketsCreate.getRoute(), { replace: true })}>
+                                <ListItemButton
+                                    sx={{
+                                        minHeight: 48,
+                                        justifyContent: open ? 'initial' : 'center',
+                                        px: 2.5,
+                                    }}
+                                >
+                                    <ListItemIcon
+                                        sx={{
+                                            minWidth: 0,
+                                            mr: open ? 3 : 'auto',
+                                            justifyContent: 'center',
+                                        }}
+                                    >
+                                        <PlaylistAddIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Создать заявку" sx={{ opacity: open ? 1 : 0 }} />
+                                </ListItemButton>
+                            </ListItem>
+                        </>
+                    }
                 </List>
                 {
                     store.userStore.currentUser != null && hasPermission(store.userStore.currentUser.permissions, Permissions.Admin) &&
@@ -286,19 +291,19 @@ const Layout: FC<ILayoutProps> = (props) => {
                                 <MenuItem onClick={handleAdminClose} component={Link} to={UIRoutesHelper.adminQueues.getRoute()}>
                                     Очереди
                                 </MenuItem>
-                                <MenuItem onClick={handleAdminClose} component={Link} to={UIRoutesHelper.adminStatusRules.getRoute()}>
+                                {/* <MenuItem onClick={handleAdminClose} component={Link} to={UIRoutesHelper.adminStatusRules.getRoute()}>
                                     Правила статусов
-                                </MenuItem>
+                                </MenuItem> */}
                                 <MenuItem onClick={handleAdminClose} component={Link} to={UIRoutesHelper.adminStatuses.getRoute()}>
                                     Статусы
                                 </MenuItem>
                                 <MenuItem onClick={handleAdminClose} component={Link} to={UIRoutesHelper.adminResolutions.getRoute()}>
                                     Резолюции
                                 </MenuItem>
-                                <MenuItem onClick={handleAdminClose} component={Link} to={UIRoutesHelper.adminTemplateTypes.getRoute()}>
+                                <MenuItem onClick={handleAdminClose} component={Link} to={UIRoutesHelper.adminResponseTemplateTypes.getRoute()}>
                                     Типы шаблонов
                                 </MenuItem>
-                                <MenuItem onClick={handleAdminClose} component={Link} to={UIRoutesHelper.adminTemplates.getRoute()}>
+                                <MenuItem onClick={handleAdminClose} component={Link} to={UIRoutesHelper.adminResponseTemplates.getRoute()}>
                                     Шаблоны
                                 </MenuItem>
                             </Menu>

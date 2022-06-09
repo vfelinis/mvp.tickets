@@ -20,6 +20,7 @@ namespace mvp.tickets.data
         public DbSet<TicketQueueHistory> TicketQueueHistories { get; set; }
         public DbSet<TicketResolution> TicketResolutions { get; set; }
         public DbSet<TicketResponseTemplate> TicketResponseTemplates { get; set; }
+        public DbSet<TicketResponseTemplateType> TicketResponseTemplateTypes { get; set; }
         public DbSet<TicketStatus> TicketStatuses { get; set; }
         public DbSet<TicketStatusHistory> TicketStatusHistories { get; set; }
         public DbSet<TicketStatusRule> TicketStatusRules { get; set; }
@@ -43,6 +44,7 @@ namespace mvp.tickets.data
             modelBuilder.DescribeTicketQueueHistory();
             modelBuilder.DescribeTicketResolution();
             modelBuilder.DescribeTicketResponseTemplate();
+            modelBuilder.DescribeTicketResponseTemplateType();
             modelBuilder.DescribeTicketStatus();
             modelBuilder.DescribeTicketStatusHistory();
             modelBuilder.DescribeTicketStatusRule();

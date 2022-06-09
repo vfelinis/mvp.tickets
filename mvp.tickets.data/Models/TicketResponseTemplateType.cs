@@ -17,7 +17,7 @@ namespace mvp.tickets.data.Models
     {
         public static string TableName => "TicketResponseTemplateTypes";
 
-        public static void DescribeTicketTypeResponseTemplate(this ModelBuilder modelBuilder)
+        public static void DescribeTicketResponseTemplateType(this ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<TicketResponseTemplateType>(s =>
             {

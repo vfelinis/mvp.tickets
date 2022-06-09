@@ -2,12 +2,12 @@ import { Button, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { FC, useEffect } from 'react';
-import { UIRoutesHelper } from '../../../Helpers/UIRoutesHelper';
-import TableComponent, { ColumnType, tableColumnBooleanSearchOptions } from '../../Shared/TableComponent';
-import { useRootStore } from '../../../Store/RootStore';
-import { SortDirection } from '../../../Enums/SortDirection';
-import { IUserModel } from '../../../Models/User';
-import { Permissions, hasPermission } from '../../../Enums/Permissions';
+import { UIRoutesHelper } from '../../../../Helpers/UIRoutesHelper';
+import TableComponent, { ColumnType, tableColumnBooleanSearchOptions } from '../../../Shared/TableComponent';
+import { useRootStore } from '../../../../Store/RootStore';
+import { SortDirection } from '../../../../Enums/SortDirection';
+import { IUserModel } from '../../../../Models/User';
+import { Permissions, hasPermission } from '../../../../Enums/Permissions';
 
 interface IAdminUsersViewProps {
 }
@@ -55,16 +55,20 @@ const AdminUsersView: FC<IAdminUsersViewProps> = (props) => {
                     valueFormater: (value: Permissions): string => {
                         let label = '';
                         if (hasPermission(value, Permissions.Admin)) {
-                            label = 'Администратор; ';
+                            label += 'Администратор; ';
                         }
                         if (hasPermission(value, Permissions.Employee)) {
                             label += 'Сотрудник; ';
                         }
-                        return label + 'Пользователь';
+                        if (hasPermission(value, Permissions.User)) {
+                            label += 'Пользователь;';
+                        }
+                        return label;
                     },
                     searchOptions: [
                         { id: `${Permissions.Admin}`, name: "Администратор" },
                         { id: `${Permissions.Employee}`, name: "Сотрудник" },
+                        { id: `${Permissions.User}`, name: "Пользователь" },
                     ]
                 },
                 {
