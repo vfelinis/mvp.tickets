@@ -7,6 +7,7 @@ import { ResolutionStore } from './ResolutionStore';
 import { ResponseTemplateStore } from './ResponseTemplateStore';
 import { ResponseTemplateTypeStore } from './ResponseTemplateTypeStore';
 import { StatusStore } from './StatusStore';
+import { TicketStore } from './TicketStore';
 import { UserStore } from './UserStore';
 
 export class RootStore {
@@ -19,6 +20,7 @@ export class RootStore {
   responseTemplateTypeStore: ResponseTemplateTypeStore;
   responseTemplateStore: ResponseTemplateStore;
   statusStore: StatusStore;
+  ticketStore: TicketStore;
 
   constructor() {
     this.userStore = new UserStore(this);
@@ -30,6 +32,7 @@ export class RootStore {
     this.responseTemplateTypeStore = new ResponseTemplateTypeStore(this);
     this.responseTemplateStore = new ResponseTemplateStore(this);
     this.statusStore = new StatusStore(this);
+    this.ticketStore = new TicketStore(this);
   }
 }
 

@@ -17,4 +17,9 @@ export class ApiRoutesHelper {
     static responseTemplate = '/api/responseTemplates/';
     static responseTemplateType = '/api/responseTemplateTypes/';
     static status = '/api/statuses/';
+    static ticket = {
+        report: '/api/tickets/report/',
+        create: '/api/tickets/',
+        get: (id: number) : string => `/api/tickets/${id}/`,
+    };
 }

@@ -127,7 +127,15 @@ const Layout: FC<ILayoutProps> = (props) => {
         setAnchorAdminEl(null);
     };
 
-    const isLoading = store.categoryStore.isLoading || store.userStore.isLoading;
+    const isLoading = store.categoryStore.isLoading
+        || store.userStore.isLoading
+        || store.priorityStore.isLoading
+        || store.queueStore.isLoading
+        || store.resolutionStore.isLoading
+        || store.responseTemplateStore.isLoading
+        || store.responseTemplateTypeStore.isLoading
+        || store.statusStore.isLoading
+        || store.ticketStore.isLoading;
 
     return <>
         {isLoading && <Box sx={{

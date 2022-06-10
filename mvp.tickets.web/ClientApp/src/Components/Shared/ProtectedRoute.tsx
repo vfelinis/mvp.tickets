@@ -14,7 +14,7 @@ interface IProtectedRouteProps {
 
 const ProtectedRoute: FC<IProtectedRouteProps> = (props) => {
     const store = useRootStore();
-    const user = (props.user ?? store.userStore.currentUser);
+    const user = store.userStore.wasInit === false ? (props.user ?? store.userStore.currentUser) : store.userStore.currentUser;
     if (user === null) {
         return <Navigate to={UIRoutesHelper.login.getRoute()} replace={true} />;
     }

@@ -37,12 +37,12 @@ export class ResponseTemplateStore {
         this.isLoading = isLoading;
     }
 
-    setEntries(categories: IResponseTemplateModel[]) : void {
-        this.entries = categories;
+    setEntries(entries: IResponseTemplateModel[]) : void {
+        this.entries = entries;
     }
 
-    setEntry(category: IResponseTemplateModel | null) : void {
-        this.entry = category;
+    setEntry(entry: IResponseTemplateModel | null) : void {
+        this.entry = entry;
     }
 
     getEntries() : void {

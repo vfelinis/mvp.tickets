@@ -10,6 +10,7 @@ import { UIRoutesHelper } from '../Helpers/UIRoutesHelper';
 export class UserStore {
     private rootStore: RootStore;
     isLoading: boolean;
+    wasInit: boolean;
     currentUser: IUserModel | null;
     report: IUserModel[];
     total: number;
@@ -18,12 +19,14 @@ export class UserStore {
     constructor(rootStore: RootStore) {
         this.rootStore = rootStore;
         this.isLoading = false;
+        this.wasInit = false;
         this.currentUser = null;
         this.report = [];
         this.total = 0;
         this.editableUser = null;
         makeObservable(this, {
             isLoading: observable,
+            wasInit: observable,
             currentUser: observable,
             report: observable,
             total: observable,
@@ -47,10 +50,12 @@ export class UserStore {
 
     setCurrentUser(user: IUserModel | null): void {
         this.currentUser = user;
+        this.wasInit = true;
     }
 
     setReport(users: IUserModel[], total: number) : void {
         this.report = users;
+        this.total = total;
     }
 
     setEditableUser(user: IUserModel | null): void {

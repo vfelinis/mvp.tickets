@@ -49,7 +49,7 @@
 
   <ItemGroup>
     <Folder Include="ClientApp\" />
-    <Folder Include="wwwroot\" />
+    <Folder Include="wwwroot\tickets\" />
   </ItemGroup>
 
 </Project>

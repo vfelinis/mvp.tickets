@@ -19,6 +19,7 @@ import TablePagination from '@mui/material/TablePagination';
 import debounce from 'lodash/debounce';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
+import Typography from '@mui/material/Typography';
 
 interface ITableComponentProps {
     table: ITable
@@ -38,6 +39,7 @@ interface ITableColumnValueFormater {
 interface ITableColumnSearchOption {
     id: string
     name: string
+    isMain?: boolean
 }
 
 export const tableColumnBooleanSearchOptions: ITableColumnSearchOption[] = [
@@ -47,11 +49,14 @@ export const tableColumnBooleanSearchOptions: ITableColumnSearchOption[] = [
 
 interface ITableColumn {
     field: string
+    proxyField?: string | null
     label: string
     type: ColumnType
     sortable?: boolean
     searchable?: boolean
     searchOptions?: ITableColumnSearchOption[] | undefined
+    isOptionsGrouped?: boolean
+    skipOptionsSorting?: boolean
     valueFormater?: ITableColumnValueFormater | undefined
 }
 
@@ -105,9 +110,14 @@ const TableComponent: FC<ITableComponentProps> = (props) => {
 
     const order = direction === SortDirection.ASC ? 'asc' : 'desc';
 
+    const getField = (field: string) : string => {
+        const column = props.table.columns.find(s => s.field === field);
+        return column?.proxyField ?? column?.field ?? '';
+    };
+
     const handleSort = (field: string): void => {
         if (props.table.options.isServerSide && props.table.options.actionHandle !== undefined) {
-            props.table.options.actionHandle(searchBy, getOffset(page), field, direction * -1);
+            props.table.options.actionHandle(searchBy, getOffset(page), getField(field), direction * -1);
         }
         setDirection(direction * -1);
         setSortBy(field);
@@ -116,7 +126,12 @@ const TableComponent: FC<ITableComponentProps> = (props) => {
     const handleSearch = (field: string, value: any): void => {
         const newSearchBy = { ...searchBy, [field]: value };
         if (props.table.options.isServerSide && props.table.options.actionHandle !== undefined) {
-            props.table.options.actionHandle(newSearchBy, 0, sortBy, direction);
+            let searchByToSend = {};
+            for (let [key, value] of Object.entries(newSearchBy)) {
+                const newKey = getField(key);
+                searchByToSend = {...searchByToSend, [newKey]: value};
+            }
+            props.table.options.actionHandle(searchByToSend, 0, getField(sortBy), direction);
         }
         setSearchBy(newSearchBy);
         setPage(0);
@@ -215,8 +230,20 @@ const TableComponent: FC<ITableComponentProps> = (props) => {
                                             }
                                         }
                                     }}
-                                    options={column.searchOptions.slice().sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))}
+                                    options={column.isOptionsGrouped === true || column.skipOptionsSorting === true
+                                        ? column.searchOptions
+                                        : column.searchOptions.slice().sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))}
                                     getOptionLabel={option => option.name}
+                                    renderOption={(props, option) => (
+                                        <Box component="li" {...props}>
+                                            {
+                                                column.isOptionsGrouped == true
+                                                    ? <Typography sx={option.isMain ? { fontWeight: 700 } : { pl: 1 }}>{option.name}</Typography>
+                                                    : <>{option.name}</>
+                                            }
+
+                                        </Box>
+                                    )}
                                     onChange={(event, value) => handleSearch(column.field, value?.id)}
                                     isOptionEqualToValue={(option, value) => option.id === value.id}
                                     renderInput={(params) => <TextField {...params} label={column.label} variant="standard" />}

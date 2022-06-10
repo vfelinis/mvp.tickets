@@ -37,17 +37,17 @@ export class StatusStore {
         this.isLoading = isLoading;
     }
 
-    setEntries(categories: IStatusModel[]) : void {
-        this.entries = categories;
+    setEntries(entries: IStatusModel[]) : void {
+        this.entries = entries;
     }
 
-    setEntry(category: IStatusModel | null) : void {
-        this.entry = category;
+    setEntry(entry: IStatusModel | null) : void {
+        this.entry = entry;
     }
 
-    getEntries() : void {
+    getEntries(onlyActive: boolean = false) : void {
         const request: IStatusQueryRequest = {
-            onlyActive: false
+            onlyActive: onlyActive
         };
         this.setIsLoading(true);
         axios.get<IBaseQueryResponse<IStatusModel[]>>(ApiRoutesHelper.status, {params:request})

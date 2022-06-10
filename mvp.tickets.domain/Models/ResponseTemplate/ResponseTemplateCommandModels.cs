@@ -18,6 +18,7 @@ namespace mvp.tickets.domain.Models
         [StringLength(maximumLength: 2000)]
         public string Text { get; set; }
         public bool IsActive { get; set; }
+        [Required]
         public int TicketResponseTemplateTypeId { get; set; }
     }
 

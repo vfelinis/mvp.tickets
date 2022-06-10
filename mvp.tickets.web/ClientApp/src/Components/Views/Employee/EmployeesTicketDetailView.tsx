@@ -3,16 +3,16 @@ import { FC, useState, useEffect, Children } from 'react';
 import { Link } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { UIRoutesHelper } from '../../Helpers/UIRoutesHelper';
-import { ITicketCreateCommandRequest } from '../../Models/Ticket';
-import { useRootStore } from '../../Store/RootStore';
+import { UIRoutesHelper } from '../../../Helpers/UIRoutesHelper';
+import { ITicketCreateCommandRequest } from '../../../Models/Ticket';
+import { useRootStore } from '../../../Store/RootStore';
 import FileUpload from 'react-material-file-upload';
-import { ICategoryModel } from '../../Models/Category';
+import { ICategoryModel } from '../../../Models/Category';
 
-interface ICreateTicketViewProps {
+interface IEmployeesTicketDetailViewProps {
 }
 
-const CreateTicketView: FC<ICreateTicketViewProps> = (props) => {
+const EmployeesTicketDetailView: FC<IEmployeesTicketDetailViewProps> = (props) => {
     const [files, setFiles] = useState<File[]>([]);
     const store = useRootStore();
     const [entry, setEntry] = useState<ITicketCreateCommandRequest>({ name: '', ticketCategoryId: 0, text: '' });
@@ -118,4 +118,4 @@ const CreateTicketView: FC<ICreateTicketViewProps> = (props) => {
     </>;
 };
 
-export default observer(CreateTicketView);
+export default observer(EmployeesTicketDetailView);

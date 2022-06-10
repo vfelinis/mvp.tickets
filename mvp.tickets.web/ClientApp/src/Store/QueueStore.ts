@@ -37,17 +37,17 @@ export class QueueStore {
         this.isLoading = isLoading;
     }
 
-    setEntries(categories: IQueueModel[]) : void {
-        this.entries = categories;
+    setEntries(entries: IQueueModel[]) : void {
+        this.entries = entries;
     }
 
-    setEntry(category: IQueueModel | null) : void {
-        this.entry = category;
+    setEntry(entry: IQueueModel | null) : void {
+        this.entry = entry;
     }
 
-    getEntries() : void {
+    getEntries(onlyActive: boolean = false) : void {
         const request: IQueueQueryRequest = {
-            onlyActive: false
+            onlyActive: onlyActive
         };
         this.setIsLoading(true);
         axios.get<IBaseQueryResponse<IQueueModel[]>>(ApiRoutesHelper.queue, {params:request})

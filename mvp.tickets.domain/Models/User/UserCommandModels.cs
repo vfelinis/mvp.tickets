@@ -49,7 +49,7 @@ namespace mvp.tickets.domain.Models
         int Id { get; set; }
     }
 
-    public record UserUpdateCommandRequest: UserCreateCommandRequest, IUserCreateCommandRequest
+    public record UserUpdateCommandRequest: UserCreateCommandRequest, IUserUpdateCommandRequest
     {
         public int Id { get; set; }
     }

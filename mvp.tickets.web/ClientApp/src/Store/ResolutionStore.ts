@@ -37,17 +37,17 @@ export class ResolutionStore {
         this.isLoading = isLoading;
     }
 
-    setEntries(categories: IResolutionModel[]) : void {
-        this.entries = categories;
+    setEntries(entries: IResolutionModel[]) : void {
+        this.entries = entries;
     }
 
-    setEntry(category: IResolutionModel | null) : void {
-        this.entry = category;
+    setEntry(entry: IResolutionModel | null) : void {
+        this.entry = entry;
     }
 
-    getEntries() : void {
+    getEntries(onlyActive: boolean = false) : void {
         const request: IResolutionQueryRequest = {
-            onlyActive: false
+            onlyActive: onlyActive
         };
         this.setIsLoading(true);
         axios.get<IBaseQueryResponse<IResolutionModel[]>>(ApiRoutesHelper.resolution, {params:request})

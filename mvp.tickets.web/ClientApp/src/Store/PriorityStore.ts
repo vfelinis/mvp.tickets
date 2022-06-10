@@ -37,17 +37,17 @@ export class PriorityStore {
         this.isLoading = isLoading;
     }
 
-    setEntries(categories: IPriorityModel[]) : void {
-        this.entries = categories;
+    setEntries(entries: IPriorityModel[]) : void {
+        this.entries = entries;
     }
 
-    setEntry(category: IPriorityModel | null) : void {
-        this.entry = category;
+    setEntry(entry: IPriorityModel | null) : void {
+        this.entry = entry;
     }
 
-    getEntries() : void {
+    getEntries(onlyActive: boolean = false) : void {
         const request: IPriorityQueryRequest = {
-            onlyActive: false
+            onlyActive: onlyActive
         };
         this.setIsLoading(true);
         axios.get<IBaseQueryResponse<IPriorityModel[]>>(ApiRoutesHelper.priority, {params:request})

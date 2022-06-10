@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using mvp.tickets.data;
@@ -37,6 +38,7 @@ namespace mvp.tickets.web.Extensions
             {
                 options.AddPolicy(AuthConstants.AdminPolicy, policy => policy.RequireClaim(AuthConstants.AdminClaim));
                 options.AddPolicy(AuthConstants.EmployeePolicy, policy => policy.RequireClaim(AuthConstants.EmployeeClaim));
+                options.AddPolicy(AuthConstants.UserPolicy, policy => policy.RequireClaim(AuthConstants.UserClaim));
             });
             #endregion
 

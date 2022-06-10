@@ -111,6 +111,10 @@ namespace mvp.tickets.domain.Services
                 {
                     claims.Add(new Claim(AuthConstants.EmployeeClaim, "true"));
                 }
+                if (userModel.Permissions.HasFlag(Permissions.User))
+                {
+                    claims.Add(new Claim(AuthConstants.UserClaim, "true"));
+                }
 
                 response = new BaseCommandResponse<(IUserModel user, List<Claim> claims)>
                 {

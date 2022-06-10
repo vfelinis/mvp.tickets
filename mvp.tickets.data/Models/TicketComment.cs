@@ -28,7 +28,7 @@ namespace mvp.tickets.data.Models
         {
             modelBuilder.Entity<TicketComment>(s =>
             {
-                s.Property(p => p.Text).IsRequired(true).HasMaxLength(2000);
+                s.Property(p => p.Text).IsRequired(false).HasMaxLength(2000);
             });
 
             modelBuilder.Entity<TicketComment>()

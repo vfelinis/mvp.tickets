@@ -14,7 +14,7 @@ import { IUserModel } from './Models/User';
 import { UIRoutesHelper } from './Helpers/UIRoutesHelper';
 import TicketsView from './Components/Views/TicketsView';
 import CreateTicketView from './Components/Views/CreateTicketView';
-import EmployeeView from './Components/Views/Employee/EmployeeView';
+import EmployeesView from './Components/Views/Employee/EmployeesView';
 import ProtectedRoute from './Components/Shared/ProtectedRoute';
 import { Permissions } from './Enums/Permissions';
 import AdminUsersView from './Components/Views/Admin/User/AdminUsersView';
@@ -97,7 +97,7 @@ export const App: FC<IAppProps> = (props) => {
       { path: UIRoutesHelper.adminResponseTemplatesCreate.path, element: <ProtectedRoute permissions={Permissions.Admin} children={<AdminResponseTemplatesCreateView />} user={props.user} /> },
       { path: UIRoutesHelper.adminResponseTemplatesUpdate.path, element: <ProtectedRoute permissions={Permissions.Admin} children={<AdminResponseTemplatesUpdateView />} user={props.user} /> },
       
-      { path: UIRoutesHelper.employee.path, element: <ProtectedRoute permissions={Permissions.Employee} children={<EmployeeView />} user={props.user} /> },
+      { path: UIRoutesHelper.employee.path, element: <ProtectedRoute permissions={Permissions.Employee} children={<EmployeesView />} user={props.user} /> },
       
       { path: UIRoutesHelper.notFound.path, element: <NotFoundView /> },
     ],

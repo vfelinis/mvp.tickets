@@ -46,9 +46,9 @@ export class CategoryStore {
         this.category = category;
     }
 
-    getCategories() : void {
+    getCategories(onlyActive: boolean = false) : void {
         const request: ICategoryQueryRequest = {
-            onlyActive: false,
+            onlyActive: onlyActive,
             onlyRoot: false
         };
         this.setIsLoading(true);
