@@ -10,6 +10,12 @@ export interface ITicketCreateCommandRequest
     text?: string | null
 }
 
+export interface ITicketCommentCreateCommandRequest
+{
+    text?: string | null
+    isInternal: boolean
+}
+
 export interface ITicketModel
 {
     id: number

@@ -21,5 +21,6 @@ export class ApiRoutesHelper {
         report: '/api/tickets/report/',
         create: '/api/tickets/',
         get: (id: number) : string => `/api/tickets/${id}/`,
+        createComment: (id: number) : string => `/api/tickets/${id}/comments/`,
     };
 }

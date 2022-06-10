@@ -27,7 +27,7 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 });
 
 app.UseForwardedHeaders();
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseAuthentication();
 

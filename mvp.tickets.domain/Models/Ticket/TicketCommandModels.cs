@@ -22,6 +22,20 @@ namespace mvp.tickets.domain.Models
         public List<IFormFile> Files { get; set; }
     }
 
+    public interface ITicketCommentCreateCommandRequest : IBaseCommandRequest
+    {
+        string Text { get; set; }
+        bool IsInternal { get; set; }
+        List<IFormFile> Files { get; set; }
+    }
+    public record TicketCommentCreateCommandRequest : BaseCommandRequest, ITicketCommentCreateCommandRequest
+    {
+        [StringLength(maximumLength: 2000)]
+        public string Text { get; set; }
+        public bool IsInternal { get; set; }
+        public List<IFormFile> Files { get; set; }
+    }
+
     public interface ITicketUpdateCommandRequest : ITicketCreateCommandRequest
     {
         int Id { get; set; }

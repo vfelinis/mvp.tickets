@@ -1,9 +1,9 @@
 import axios from 'axios';
 import { observable, action, makeObservable } from 'mobx';
-import { IBaseCommandResponse, IBaseReportQueryRequest, IBaseReportQueryResponse } from '../Models/Base';
+import { IBaseCommandResponse, IBaseQueryResponse, IBaseReportQueryRequest, IBaseReportQueryResponse } from '../Models/Base';
 import { RootStore } from './RootStore';
 import { ApiRoutesHelper } from '../Helpers/ApiRoutesHelper';
-import { ITicketCreateCommandRequest, ITicketModel } from '../Models/Ticket';
+import { ITicketCreateCommandRequest, ITicketModel, ITicketQueryRequest } from '../Models/Ticket';
 import { UIRoutesHelper } from '../Helpers/UIRoutesHelper';
 import { browserHistory } from '..';
 
@@ -32,6 +32,7 @@ export class TicketStore {
             getEntry: action,
             setEntry: action,
             create: action,
+            createComment: action,
             //getDataForUpdateForm: action,
             //update: action,
         });
@@ -69,12 +70,15 @@ export class TicketStore {
     }
 
     getEntry(id: number, isUserView: boolean) : void {
+        const request: ITicketQueryRequest = {
+            isUserView: isUserView
+        }
         this.setIsLoading(true);
-        axios.post<IBaseReportQueryResponse<ITicketModel[]>>(ApiRoutesHelper.ticket.report, request)
+        axios.get<IBaseQueryResponse<ITicketModel>>(ApiRoutesHelper.ticket.get(id), {params: request})
             .then(response => {
                 this.setIsLoading(false);
                 if (response.data.isSuccess) {
-                    this.setReport(response.data.data, response.data.total);
+                    this.setEntry(response.data.data);
 
                 } else {
                     this.rootStore.errorStore.setError(response.data.errorMessage ?? response.data.code.toString());
@@ -93,6 +97,23 @@ export class TicketStore {
                 this.setIsLoading(false);
                 if (response.data.isSuccess) {
                     browserHistory.push(UIRoutesHelper.tickets.getRoute());
+                } else {
+                    this.rootStore.errorStore.setError(response.data.errorMessage ?? response.data.code.toString());
+                }
+            })
+            .catch(error => {
+                this.setIsLoading(false);
+                this.rootStore.errorStore.setError(JSON.stringify(error));
+            })
+    }
+
+    createComment(id: number, isUserView: boolean, request: FormData) : void {
+        this.setIsLoading(true);
+        axios.post<IBaseCommandResponse<number>>(ApiRoutesHelper.ticket.createComment(id), request, { headers: { "Content-Type": "multipart/form-data" } })
+            .then(response => {
+                this.setIsLoading(false);
+                if (response.data.isSuccess) {
+                    browserHistory.push(isUserView ? UIRoutesHelper.ticketsDetail.getRoute(id) : UIRoutesHelper.employeeTicketDetail.getRoute(id));
                 } else {
                     this.rootStore.errorStore.setError(response.data.errorMessage ?? response.data.code.toString());
                 }

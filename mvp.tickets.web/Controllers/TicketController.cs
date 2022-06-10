@@ -197,7 +197,7 @@ namespace mvp.tickets.web.Controllers
 
                     foreach(var ticketCommentAttachment in entry.TicketComments.SelectMany(s => s.TicketCommentAttachmentModels))
                     {
-                        ticketCommentAttachment.Path = $"/{TicketConstants.AttachmentFolder}/{ticketCommentAttachment.Path}";
+                        ticketCommentAttachment.Path = $"/{TicketConstants.AttachmentFolder}/{entry.ReporterId}/{ticketCommentAttachment.Path}";
                     }
 
                     return new BaseQueryResponse<ITicketModel>
@@ -326,6 +326,108 @@ namespace mvp.tickets.web.Controllers
                     Code = ResponseCodes.Success,
                     Data = entry.Id
                 };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                response = new BaseCommandResponse<int>();
+                response.HandleException(ex);
+            }
+            return response;
+        }
+
+        [Authorize]
+        [HttpPost("{id}/comments")]
+        public async Task<IBaseCommandResponse<int>> CreateComment(int id, [FromForm] TicketCommentCreateCommandRequest request)
+        {
+            if (request == null)
+            {
+                return new BaseCommandResponse<int>
+                {
+                    IsSuccess = false,
+                    Code = ResponseCodes.BadRequest
+                };
+            }
+
+            IBaseCommandResponse<int> response = default;
+
+            try
+            {
+                if (!User.Claims.Any(s => s.Type == AuthConstants.EmployeeClaim) && !User.Claims.Any(s => s.Type == AuthConstants.UserClaim))
+                {
+                    return new BaseCommandResponse<int>
+                    {
+                        IsSuccess = false,
+                        Code = ResponseCodes.Unauthorized
+                    };
+                }
+
+                var ticket = await _dbContext.Tickets.AsNoTracking().FirstOrDefaultAsync(s => s.Id == id);
+                if (ticket == null)
+                {
+                    return new BaseCommandResponse<int>
+                    {
+                        IsSuccess = false,
+                        Code = ResponseCodes.NotFound
+                    };
+                }
+
+                var userId = int.Parse(User.Claims.First(s => s.Type == ClaimTypes.Sid).Value);
+                if (!string.IsNullOrWhiteSpace(request.Text) || request.Files?.Any() == true)
+                {
+                    var ticketComment = new TicketComment
+                    {
+                        TicketId = ticket.Id,
+                        Text = !string.IsNullOrWhiteSpace(request.Text) ? HttpUtility.HtmlAttributeEncode(request.Text) : null,
+                        IsInternal = request.IsInternal,
+                        IsActive = true,
+                        DateCreated = DateTimeOffset.Now,
+                        DateModified = DateTimeOffset.Now,
+                        CreatorId = userId,
+                    };
+
+                    if (request.Files?.Any() == true)
+                    {
+                        foreach (var file in request.Files)
+                        {
+                            var ext = Path.GetExtension(file.FileName).Trim('.').ToLower();
+                            var ticketCommentAttachment = new TicketCommentAttachment
+                            {
+                                TicketComment = ticketComment,
+                                DateCreated = DateTimeOffset.Now,
+                                DateModified = DateTimeOffset.Now,
+                                IsActive = true,
+                                OriginalFileName = file.FileName,
+                                Extension = ext,
+                                FileName = Guid.NewGuid().ToString()
+                            };
+                            ticketComment.TicketCommentAttachments.Add(ticketCommentAttachment);
+
+                            var path = Path.Join(_environment.WebRootPath, $"/{TicketConstants.AttachmentFolder}/{userId}/{ticketCommentAttachment.FileName}.{ext}");
+                            Directory.CreateDirectory(Path.GetDirectoryName(path));
+                            using (var stream = System.IO.File.Create(path))
+                            {
+                                await file.CopyToAsync(stream);
+                            }
+                        }
+                    }
+                    await _dbContext.TicketComments.AddAsync(ticketComment).ConfigureAwait(false);
+                    await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+                    response = new BaseCommandResponse<int>
+                    {
+                        IsSuccess = true,
+                        Code = ResponseCodes.Success,
+                        Data = ticketComment.Id
+                    };
+                }
+                else
+                {
+                    response = new BaseCommandResponse<int>
+                    {
+                        IsSuccess = true,
+                        Code = ResponseCodes.Success,
+                    };
+                }
             }
             catch (Exception ex)
             {

@@ -42,6 +42,10 @@ import AdminResponseTemplateTypesCreateView from './Components/Views/Admin/Respo
 import AdminResponseTemplateTypesUpdateView from './Components/Views/Admin/ResponseTemplateType/AdminResponseTemplateTypesUpdateView';
 import AdminResponseTemplatesCreateView from './Components/Views/Admin/ResponseTemplate/AdminResponseTemplatesCreateView';
 import AdminResponseTemplatesUpdateView from './Components/Views/Admin/ResponseTemplate/AdminResponseTemplatesUpdateView';
+import EmployeesTicketDetailView from './Components/Views/Employee/EmployeesTicketDetailView';
+import TicketDetailView from './Components/Views/TicketDetailView';
+import TicketsCommentCreateView from './Components/Views/TicketsCommentCreateView';
+import EmployeesTicketCommentCreateView from './Components/Views/Employee/EmployeesTicketCommentCreateView';
 
 interface IAppProps {
   user: IUserModel | null
@@ -64,6 +68,8 @@ export const App: FC<IAppProps> = (props) => {
       { path: UIRoutesHelper.home.path, element: <HomeView /> },
       { path: UIRoutesHelper.tickets.path, element: <ProtectedRoute permissions={Permissions.User} children={<TicketsView />} user={props.user} /> },
       { path: UIRoutesHelper.ticketsCreate.path, element: <ProtectedRoute permissions={Permissions.User} children={<CreateTicketView />} user={props.user} /> },
+      { path: UIRoutesHelper.ticketsDetail.path, element: <ProtectedRoute permissions={Permissions.User} children={<TicketDetailView />} user={props.user} /> },
+      { path: UIRoutesHelper.ticketsCommentCreate.path, element: <ProtectedRoute permissions={Permissions.User} children={<TicketsCommentCreateView />} user={props.user} /> },
 
       { path: UIRoutesHelper.adminUsers.path, element: <ProtectedRoute permissions={Permissions.Admin} children={<AdminUsersView />} user={props.user} /> },
       { path: UIRoutesHelper.adminUsersCreate.path, element: <ProtectedRoute permissions={Permissions.Admin} children={<AdminUsersCreateView />} user={props.user} /> },
@@ -98,6 +104,8 @@ export const App: FC<IAppProps> = (props) => {
       { path: UIRoutesHelper.adminResponseTemplatesUpdate.path, element: <ProtectedRoute permissions={Permissions.Admin} children={<AdminResponseTemplatesUpdateView />} user={props.user} /> },
       
       { path: UIRoutesHelper.employee.path, element: <ProtectedRoute permissions={Permissions.Employee} children={<EmployeesView />} user={props.user} /> },
+      { path: UIRoutesHelper.employeeTicketDetail.path, element: <ProtectedRoute permissions={Permissions.Employee} children={<EmployeesTicketDetailView />} user={props.user} /> },
+      { path: UIRoutesHelper.employeeTicketCommentCreate.path, element: <ProtectedRoute permissions={Permissions.Employee} children={<EmployeesTicketCommentCreateView />} user={props.user} /> },
       
       { path: UIRoutesHelper.notFound.path, element: <NotFoundView /> },
     ],

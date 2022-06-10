@@ -7,7 +7,7 @@ interface IHomeViewProps {
 const HomeView: FC<IHomeViewProps> = (props) => {
   return <>
     <Typography variant="h6" component="div">
-      Главная
+      Добро пожаловать
     </Typography>
   </>;
 };

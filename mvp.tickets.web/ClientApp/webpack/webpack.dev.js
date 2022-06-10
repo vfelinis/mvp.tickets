@@ -22,6 +22,10 @@ module.exports = {
         target: target,
         secure: false,
       },
+      '/files': {
+        target: target,
+        secure: false,
+      },
     },
     port: 8080,
     https: {

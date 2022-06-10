@@ -52,7 +52,7 @@ const TicketsView: FC<ITicketsViewProps> = (props) => {
     </Typography>
     <TableComponent table={{
             options: {
-                editRoute: (row: ITicketModel): string => UIRoutesHelper.ticketsUpdate.getRoute(row.id),
+                editRoute: (row: ITicketModel): string => UIRoutesHelper.ticketsDetail.getRoute(row.id),
                 isServerSide: true,
                 actionHandle: actionHandle,
                 total: store.ticketStore.report.length,

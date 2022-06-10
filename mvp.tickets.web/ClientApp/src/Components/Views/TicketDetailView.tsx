@@ -3,22 +3,22 @@ import { FC, useState, useEffect, Children } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
-import { UIRoutesHelper } from '../../../Helpers/UIRoutesHelper';
-import { ITicketCreateCommandRequest } from '../../../Models/Ticket';
-import { useRootStore } from '../../../Store/RootStore';
+import { UIRoutesHelper } from '../../Helpers/UIRoutesHelper';
+import { ITicketCreateCommandRequest } from '../../Models/Ticket';
+import { useRootStore } from '../../Store/RootStore';
 import FileUpload from 'react-material-file-upload';
-import { ICategoryModel } from '../../../Models/Category';
+import { ICategoryModel } from '../../Models/Category';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
 
-interface IEmployeesTicketDetailViewProps {
+interface ITicketDetailViewProps {
 }
 
-const EmployeesTicketDetailView: FC<IEmployeesTicketDetailViewProps> = (props) => {
+const TicketDetailView: FC<ITicketDetailViewProps> = (props) => {
     const store = useRootStore();
     const { id } = useParams();
     useEffect(() => {
-        store.ticketStore.getEntry(Number(id), false);
+        store.ticketStore.getEntry(Number(id), true);
     }, []);
 
     const entry = store.ticketStore.entry;
@@ -39,23 +39,7 @@ const EmployeesTicketDetailView: FC<IEmployeesTicketDetailViewProps> = (props) =
             <Divider />
             <ListItem>
                 <ListItemText>
-                    Назначено на: {
-                        entry?.assigneeId ?? 0 > 0
-                            ? `${entry?.assigneeFirstName} ${entry?.assigneeLastName} (${entry?.assigneeEmail})`
-                            : '-'
-                    }
-                </ListItemText>
-            </ListItem>
-            <Divider />
-            <ListItem>
-                <ListItemText>
-                    Имя и фамилия автора: {entry?.reporterFirstName + ' ' + entry?.reporterLastName}
-                </ListItemText>
-            </ListItem>
-            <Divider />
-            <ListItem>
-                <ListItemText>
-                    Почта автора: {entry?.reporterEmail}
+                    Статус: {entry?.isClosed === true ? 'Закрыта' : 'Открыта'}
                 </ListItemText>
             </ListItem>
             <Divider />
@@ -73,44 +57,15 @@ const EmployeesTicketDetailView: FC<IEmployeesTicketDetailViewProps> = (props) =
             <Divider />
             <ListItem>
                 <ListItemText>
-                    Приоритет: {entry?.ticketPriority ?? '-'}
-                </ListItemText>
-            </ListItem>
-            <Divider />
-            <ListItem>
-                <ListItemText>
-                    Статус: {entry?.ticketStatus}
-                </ListItemText>
-            </ListItem>
-            <Divider />
-            <ListItem>
-                <ListItemText>
-                    Очередь: {entry?.ticketQueue}
-                </ListItemText>
-            </ListItem>
-            <Divider />
-            <ListItem>
-                <ListItemText>
                     Категория: {entry?.ticketCategory}
                 </ListItemText>
             </ListItem>
             <Divider />
-            {
-                entry?.isClosed === true &&
-                <>
-                    <ListItem>
-                        <ListItemText>
-                            Причина закрытия: {entry?.ticketResolution}
-                        </ListItemText>
-                    </ListItem>
-                    <Divider />
-                </>
-            }
         </List>
         <Typography variant="h6" component="div" sx={{mt:3}}>
             Комментарии
         </Typography>
-        <Button  sx={{mb:2}} variant="contained" component={Link} to={UIRoutesHelper.employeeTicketCommentCreate.getRoute(entry?.id ?? 0)}>Добавить комментарий</Button>
+        <Button  sx={{mb:2}} variant="contained" component={Link} to={UIRoutesHelper.ticketsCommentCreate.getRoute(entry?.id ?? 0)}>Добавить комментарий</Button>
         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
             {entry?.ticketComments.map((s, index) => (
                 <Grid item xs={2} sm={4} md={4} key={index}>
@@ -138,4 +93,4 @@ const EmployeesTicketDetailView: FC<IEmployeesTicketDetailViewProps> = (props) =
     </>;
 };
 
-export default observer(EmployeesTicketDetailView);
+export default observer(TicketDetailView);

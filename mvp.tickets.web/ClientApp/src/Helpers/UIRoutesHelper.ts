@@ -13,9 +13,13 @@ export class UIRoutesHelper {
         path: 'tickets/create',
         getRoute: () => `/${this.ticketsCreate.path}/`,
     };
-    static ticketsUpdate: IRoute = {
+    static ticketsDetail: IRoute = {
         path: 'tickets/:id',
-        getRoute: (id: number) => `/${this.ticketsUpdate.path.replace(":id", id.toString())}/`,
+        getRoute: (id: number) => `/${this.ticketsDetail.path.replace(":id", id.toString())}/`,
+    };
+    static ticketsCommentCreate: IRoute = {
+        path: 'tickets/:id/comments/create',
+        getRoute: (id: number) => `/${this.ticketsCommentCreate.path.replace(":id", id.toString())}/`,
     };
 
 
@@ -148,6 +152,14 @@ export class UIRoutesHelper {
     static employee: IRoute = {
         path: 'employee',
         getRoute: () => `/${this.employee.path}/`,
+    };
+    static employeeTicketDetail: IRoute = {
+        path: 'employeeTicketDetail/:id',
+        getRoute: (id: number) => `/${this.employeeTicketDetail.path.replace(":id", id.toString())}/`,
+    };
+    static employeeTicketCommentCreate: IRoute = {
+        path: 'employeeTicketDetail/:id/comments/create',
+        getRoute: (id: number) => `/${this.employeeTicketCommentCreate.path.replace(":id", id.toString())}/`,
     };
 
 

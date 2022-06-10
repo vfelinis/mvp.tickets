@@ -55,7 +55,7 @@ const EmployeesView: FC<IEmployeesViewProps> = (props) => {
     </Typography>
     <TableComponent table={{
             options: {
-                editRoute: (row: ITicketModel): string => UIRoutesHelper.ticketsUpdate.getRoute(row.id),
+                editRoute: (row: ITicketModel): string => UIRoutesHelper.employeeTicketDetail.getRoute(row.id),
                 isServerSide: true,
                 actionHandle: actionHandle,
                 total: store.ticketStore.report.length,
