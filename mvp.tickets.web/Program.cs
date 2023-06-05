@@ -69,11 +69,4 @@ app.MapFallbackToFile("/index.html");
 
 InitializationHelper.Initialize(app.Services);
 
-if (app.Environment.IsDevelopment())
-{
-    app.Run();
-}
-else
-{
-    app.Run($"http://*:{Environment.GetEnvironmentVariable("PORT")}");
-}
+app.Run();

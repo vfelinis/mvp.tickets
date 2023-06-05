@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Google.Apis.Gmail.v1.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using mvp.tickets.domain.Constants;
 using mvp.tickets.domain.Models;
 using mvp.tickets.domain.Services;
 using mvp.tickets.domain.Stores;
+using mvp.tickets.web.Services;
 
 namespace mvp.tickets.web.Extensions
 {
@@ -40,6 +42,8 @@ namespace mvp.tickets.web.Extensions
                 options.AddPolicy(AuthConstants.EmployeePolicy, policy => policy.RequireClaim(AuthConstants.EmployeeClaim));
                 options.AddPolicy(AuthConstants.UserPolicy, policy => policy.RequireClaim(AuthConstants.UserClaim));
             });
+
+            services.AddSingleton<Microsoft.Extensions.Hosting.IHostedService, EmailBackgroundSearvice>();
             #endregion
 
             #region Data
@@ -59,9 +63,14 @@ namespace mvp.tickets.web.Extensions
             services.AddTransient<ICategoryService, CategoryService>();
             #endregion
 
+
             var settings = new Settings
             {
-                FirebaseAdminConfig = File.ReadAllText(Path.Combine(env.ContentRootPath, "FirebaseAdmin.json"))
+                FirebaseAdminConfig = File.ReadAllText(Path.Combine(env.ContentRootPath, "FirebaseAdmin.json")),
+                Gmail = config.GetSection("Gmail").Get<GMailSettings>(),
+                Host = config.GetValue<string>("Host"),
+                ApiKey = config.GetValue<string>("ApiKey"),
+                TelegramToken = config.GetValue<string>("TelegramToken"),
             };
             services.AddSingleton<ISettings>(settings);
         }

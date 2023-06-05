@@ -5,6 +5,7 @@ namespace mvp.tickets.domain.Models
     public interface ICategoryCreateCommandRequest : IBaseCommandRequest
     {
         string Name { get; set; }
+        bool IsDefault { get; set; }
         bool IsActive { get; set; }
         int? ParentCategoryId { get; set; }
     }
@@ -13,6 +14,7 @@ namespace mvp.tickets.domain.Models
         [Required]
         [StringLength(maximumLength:100)]
         public string Name { get; set; }
+        public bool IsDefault { get; set; }
         public bool IsActive { get; set; }
         public int? ParentCategoryId { get; set; }
     }

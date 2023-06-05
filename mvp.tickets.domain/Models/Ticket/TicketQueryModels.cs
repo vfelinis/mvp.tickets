@@ -1,13 +1,29 @@
-﻿namespace mvp.tickets.domain.Models
+﻿using mvp.tickets.domain.Enums;
+
+namespace mvp.tickets.domain.Models
 {
+    public interface ITicketTelegramQueryRequest : IBaseQueryRequest
+    {
+        string ApiKey { get; set; }
+        string Phone { get; set; }
+    }
+
+    public record TicketTelegramQueryRequest : BaseQueryRequest, ITicketTelegramQueryRequest
+    {
+        public string ApiKey { get; set; }
+        public string Phone { get; set; }
+    }
+
     public interface ITicketQueryRequest : IBaseQueryRequest
     {
         bool IsUserView { get; set; }
+        string Token { get; set; }
     }
 
     public record TicketQueryRequest : BaseQueryRequest, ITicketQueryRequest
     {
         public bool IsUserView { get; set; }
+        public string Token { get; set; }
     }
 
     public interface ITicketModel
@@ -49,6 +65,8 @@
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Token { get; set; }
+        public TicketSource Source { get; set; }
         public bool IsClosed { get; set; }
         public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset DateModified { get; set; }

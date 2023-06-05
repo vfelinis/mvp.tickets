@@ -9,10 +9,13 @@ using mvp.tickets.data.Procedures;
 using mvp.tickets.domain.Constants;
 using mvp.tickets.domain.Enums;
 using mvp.tickets.domain.Extensions;
+using mvp.tickets.domain.Helpers;
 using mvp.tickets.domain.Models;
 using System.Data;
+using System.Net.Mail;
 using System.Security.Claims;
 using System.Web;
+using Telegram.Bot;
 
 namespace mvp.tickets.web.Controllers
 {
@@ -24,13 +27,16 @@ namespace mvp.tickets.web.Controllers
         private readonly IConnectionStrings _connectionStrings;
         private readonly ILogger<TicketController> _logger;
         private readonly IWebHostEnvironment _environment;
+        private readonly ISettings _settings;
 
-        public TicketController(ApplicationDbContext dbContext, IConnectionStrings connectionStrings, ILogger<TicketController> logger, IWebHostEnvironment environment)
+        public TicketController(ApplicationDbContext dbContext, IConnectionStrings connectionStrings, ILogger<TicketController> logger, IWebHostEnvironment environment,
+            ISettings settings)
         {
             _dbContext = dbContext;
             _connectionStrings = connectionStrings;
             _logger = logger;
             _environment = environment;
+            _settings = settings;
         }
 
         [Authorize]
@@ -124,14 +130,13 @@ namespace mvp.tickets.web.Controllers
             return response;
         }
 
-        [Authorize]
         [HttpGet("{id}")]
         public async Task<IBaseQueryResponse<ITicketModel>> Get(int id, [FromQuery] TicketQueryRequest request)
         {
             IBaseQueryResponse<ITicketModel> response = default;
             try
             {
-                if (!User.Claims.Any(s => s.Type == AuthConstants.EmployeeClaim) && !User.Claims.Any(s => s.Type == AuthConstants.UserClaim))
+                if (!User.Claims.Any(s => s.Type == AuthConstants.EmployeeClaim) && !User.Claims.Any(s => s.Type == AuthConstants.UserClaim) && string.IsNullOrWhiteSpace(request?.Token))
                 {
                     return new BaseQueryResponse<ITicketModel>
                     {
@@ -161,8 +166,19 @@ namespace mvp.tickets.web.Controllers
                         };
                     }
 
-                    var userId = int.Parse(User.Claims.First(s => s.Type == ClaimTypes.Sid).Value);
-                    if (!User.Claims.Any(s => s.Type == AuthConstants.EmployeeClaim) && entry.ReporterId != userId)
+                    if (User.Identity.IsAuthenticated)
+                    {
+                        var userId = int.Parse(User.Claims.First(s => s.Type == ClaimTypes.Sid).Value);
+                        if (!User.Claims.Any(s => s.Type == AuthConstants.EmployeeClaim) && entry.ReporterId != userId)
+                        {
+                            return new BaseQueryResponse<ITicketModel>
+                            {
+                                IsSuccess = false,
+                                Code = ResponseCodes.Unauthorized
+                            };
+                        }
+                    }
+                    else if (entry.Token != request?.Token)
                     {
                         return new BaseQueryResponse<ITicketModel>
                         {
@@ -334,6 +350,183 @@ namespace mvp.tickets.web.Controllers
                 response.HandleException(ex);
             }
             return response;
+        }
+
+        [HttpPost("telegram")]
+        public async Task<IActionResult> CreateByTelegram([FromBody] TicketCreateByTelegramCommandRequest request)
+        {
+            if (request == null || request.ApiKey != _settings.ApiKey)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var defaultQueue = await _dbContext.TicketQueues.AsNoTracking().FirstOrDefaultAsync(s => s.IsDefault);
+                if (defaultQueue == null)
+                {
+                    return BadRequest();
+                }
+
+                var defaultStatus = await _dbContext.TicketStatuses.AsNoTracking().FirstOrDefaultAsync(s => s.IsDefault);
+                if (defaultStatus == null)
+                {
+                    return BadRequest();
+                }
+
+                var defaultCategory = await _dbContext.TicketCategories.AsNoTracking().FirstOrDefaultAsync(s => s.IsDefault);
+                if (defaultCategory == null)
+                {
+                    return BadRequest();
+                }
+
+                var user = await _dbContext.Users.FirstOrDefaultAsync(s => s.Phone == request.Phone);
+                if (user == null)
+                {
+                    user = new User
+                    {
+                        Phone = request.Phone,
+                        Email = null,
+                        FirstName = request.Phone,
+                        LastName = "",
+                        Permissions = domain.Enums.Permissions.User,
+                        IsLocked = false,
+                        DateCreated = DateTimeOffset.Now,
+                        DateModified = DateTimeOffset.Now
+                    };
+                    await _dbContext.Users.AddAsync(user);
+                    await _dbContext.SaveChangesAsync();
+
+                    try
+                    {
+                        var firebaseAuth = FirebaseHelper.GetFirebaseAuth(_settings.FirebaseAdminConfig);
+                        await firebaseAuth.CreateUserAsync(new FirebaseAdmin.Auth.UserRecordArgs
+                        {
+                            PhoneNumber = request.Phone,
+                            DisplayName = request.Phone,
+                            Password = Guid.NewGuid().ToString()
+                        });
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, ex.Message);
+                    }
+                }
+
+                if (user.IsLocked)
+                {
+                    return BadRequest();
+                }
+
+                var entry = new Ticket
+                {
+                    Name = HttpUtility.HtmlAttributeEncode(request.Name),
+                    Token = Guid.NewGuid().ToString(),
+                    Source = TicketSource.Telegram,
+                    IsClosed = false,
+                    DateCreated = DateTimeOffset.Now,
+                    DateModified = DateTimeOffset.Now,
+                    ReporterId = user.Id,
+                    TicketQueueId = defaultQueue.Id,
+                    TicketStatusId = defaultStatus.Id,
+                    TicketCategoryId = defaultCategory.Id,
+                    TicketObservations = new List<TicketObservation>
+                    {
+                        new TicketObservation
+                        {
+                            DateCreated = DateTimeOffset.Now,
+                            UserId = user.Id
+                        }
+                    }
+                };
+                if (!string.IsNullOrWhiteSpace(request.Text) || request.Files?.Any() == true)
+                {
+                    var ticketComment = new TicketComment
+                    {
+                        Ticket = entry,
+                        Text = HttpUtility.HtmlAttributeEncode(request.Text),
+                        IsInternal = false,
+                        IsActive = true,
+                        DateCreated = DateTimeOffset.Now,
+                        DateModified = DateTimeOffset.Now,
+                        CreatorId = user.Id,
+                    };
+                    entry.TicketComments.Add(ticketComment);
+
+                    if (request.Files?.Any() == true)
+                    {
+                        var botClient = new TelegramBotClient(_settings.TelegramToken);
+                        foreach (var file in request.Files)
+                        {
+                            using var fileStream = new MemoryStream();
+                            var fileInfo = await botClient.GetInfoAndDownloadFileAsync(
+                                fileId: file,
+                                destination: fileStream,
+                                cancellationToken: CancellationToken.None);
+
+                            var fileName = Path.GetFileName(fileInfo.FilePath);
+                            var ext = Path.GetExtension(fileName).Trim('.').ToLower();
+                            var ticketCommentAttachment = new TicketCommentAttachment
+                            {
+                                TicketComment = ticketComment,
+                                DateCreated = DateTimeOffset.Now,
+                                DateModified = DateTimeOffset.Now,
+                                IsActive = true,
+                                OriginalFileName = fileName,
+                                Extension = ext,
+                                FileName = Guid.NewGuid().ToString()
+                            };
+                            ticketComment.TicketCommentAttachments.Add(ticketCommentAttachment);
+
+                            var path = Path.Join(_environment.WebRootPath, $"/{TicketConstants.AttachmentFolder}/{user.Id}/{ticketCommentAttachment.FileName}.{ext}");
+                            Directory.CreateDirectory(Path.GetDirectoryName(path));
+                            using (var stream = System.IO.File.Create(path))
+                            {
+                                await fileStream.CopyToAsync(stream);
+                            }
+                        }
+                    }
+                }
+
+                await _dbContext.Tickets.AddAsync(entry).ConfigureAwait(false);
+                await _dbContext.SaveChangesAsync().ConfigureAwait(false);
+
+                var link = $"https://{_settings.Host}/tickets/{entry.Id}/?token={entry.Token}";
+                return Ok(new { link });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return BadRequest();
+            }
+        }
+
+        [HttpPost("telegram/list")]
+        public async Task<IActionResult> ListByTelegram([FromBody] TicketTelegramQueryRequest request)
+        {
+            if (request == null || request.ApiKey != _settings.ApiKey)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var user = await _dbContext.Users.FirstOrDefaultAsync(s => s.Phone == request.Phone);
+                if (user == null || user.IsLocked)
+                {
+                    return BadRequest();
+                }
+
+                var tickets = await _dbContext.Tickets.AsNoTracking().Where(s => s.ReporterId == user.Id && s.Source == TicketSource.Telegram)
+                    .OrderByDescending(s => s.DateCreated).Take(10).ToListAsync();
+
+                return Ok(new { data = tickets.Select(s => new { name = s.Name, dateCreated = s.DateCreated, link = $"https://{_settings.Host}/tickets/{s.Id}/?token={s.Token}" }) });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, ex.Message);
+                return BadRequest();
+            }
         }
 
         [Authorize]

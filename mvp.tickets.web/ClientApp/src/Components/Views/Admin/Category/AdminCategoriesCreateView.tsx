@@ -6,13 +6,14 @@ import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { UIRoutesHelper } from '../../../../Helpers/UIRoutesHelper';
 import { ICategoryCreateCommandRequest } from '../../../../Models/Category';
 import { useRootStore } from '../../../../Store/RootStore';
+import React from 'react';
 
 interface IAdminCategoriesCreateViewProps {
 }
 
 const AdminCategoriesCreateView: FC<IAdminCategoriesCreateViewProps> = (props) => {
     const store = useRootStore();
-    const [category, setCategory] = useState<ICategoryCreateCommandRequest>({ name: '', isActive: true, parentCategoryId: null });
+    const [category, setCategory] = useState<ICategoryCreateCommandRequest>({ name: '', isActive: true, isDefault: false, parentCategoryId: null });
 
     const handleSubmit = () => {
         store.categoryStore.create(category);
@@ -49,6 +50,9 @@ const AdminCategoriesCreateView: FC<IAdminCategoriesCreateViewProps> = (props) =
             <FormControlLabel
                 control={<Switch checked={category.isActive} onChange={(e) => setCategory({ ...category, isActive: e.currentTarget.checked })} />}
                 label="Активная запись" />
+            <FormControlLabel
+                control={<Switch checked={category.isDefault} onChange={(e) => setCategory({ ...category, isDefault: e.currentTarget.checked })} />}
+                label="Запись по умолчанию" />
             <Autocomplete
                 disablePortal
                 options={store.categoryStore.categories.slice().sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))}

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using mvp.tickets.domain.Enums;
 
 namespace mvp.tickets.data.Models
 {
@@ -6,6 +7,8 @@ namespace mvp.tickets.data.Models
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public string Token { get; set; }
+        public TicketSource Source { get; set; }
         public bool IsClosed { get; set; }
         public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset DateModified { get; set; }
@@ -49,6 +52,7 @@ namespace mvp.tickets.data.Models
             modelBuilder.Entity<Ticket>(s =>
             {
                 s.Property(p => p.Name).IsRequired(true).HasMaxLength(100);
+                s.Property(p => p.Token).IsRequired(false).HasMaxLength(250);
                 s.Property(p => p.AssigneeId).IsRequired(false);
                 s.Property(p => p.TicketPriorityId).IsRequired(false);
                 s.Property(p => p.TicketResolutionId).IsRequired(false);

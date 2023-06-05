@@ -347,28 +347,31 @@ const Layout: FC<ILayoutProps> = (props) => {
                     </>
                 }
                 <Divider />
-                <List>
-                    <ListItem key="Выйти" disablePadding sx={{ display: 'block' }} onClick={() => store.userStore.logout()}>
-                        <ListItemButton
-                            sx={{
-                                minHeight: 48,
-                                justifyContent: open ? 'initial' : 'center',
-                                px: 2.5,
-                            }}
-                        >
-                            <ListItemIcon
+                {store.userStore.currentUser != null &&
+                    <List>
+                        <ListItem key="Выйти" disablePadding sx={{ display: 'block' }} onClick={() => store.userStore.logout()}>
+                            <ListItemButton
                                 sx={{
-                                    minWidth: 0,
-                                    mr: open ? 3 : 'auto',
-                                    justifyContent: 'center',
+                                    minHeight: 48,
+                                    justifyContent: open ? 'initial' : 'center',
+                                    px: 2.5,
                                 }}
                             >
-                                <LogoutIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Выйти" sx={{ opacity: open ? 1 : 0 }} />
-                        </ListItemButton>
-                    </ListItem>
-                </List>
+                                <ListItemIcon
+                                    sx={{
+                                        minWidth: 0,
+                                        mr: open ? 3 : 'auto',
+                                        justifyContent: 'center',
+                                    }}
+                                >
+                                    <LogoutIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Выйти" sx={{ opacity: open ? 1 : 0 }} />
+                            </ListItemButton>
+                        </ListItem>
+                    </List>
+                }
+                
             </Drawer>
             <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                 <DrawerHeader />

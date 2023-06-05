@@ -1,6 +1,6 @@
 import { Autocomplete, Box, Button, Card, Divider, Grid, List, ListItem, ListItemText, Typography, Link as MuiLink } from '@mui/material';
 import { FC, useState, useEffect, Children } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { UIRoutesHelper } from '../../Helpers/UIRoutesHelper';
@@ -10,6 +10,7 @@ import FileUpload from 'react-material-file-upload';
 import { ICategoryModel } from '../../Models/Category';
 import { formatDistanceToNow } from 'date-fns';
 import { ru } from 'date-fns/locale';
+import React from 'react';
 
 interface ITicketDetailViewProps {
 }
@@ -17,8 +18,9 @@ interface ITicketDetailViewProps {
 const TicketDetailView: FC<ITicketDetailViewProps> = (props) => {
     const store = useRootStore();
     const { id } = useParams();
+    const [searchParams] = useSearchParams();
     useEffect(() => {
-        store.ticketStore.getEntry(Number(id), true);
+        store.ticketStore.getEntry(Number(id), true, searchParams.get('token'));
     }, []);
 
     const entry = store.ticketStore.entry;

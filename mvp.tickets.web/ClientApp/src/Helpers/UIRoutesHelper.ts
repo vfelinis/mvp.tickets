@@ -17,6 +17,10 @@ export class UIRoutesHelper {
         path: 'tickets/:id',
         getRoute: (id: number) => `/${this.ticketsDetail.path.replace(":id", id.toString())}/`,
     };
+    static ticketsDetailAlt: IRoute = {
+        path: 'tickets/:id/alt',
+        getRoute: (id: number) => `/${this.ticketsDetailAlt.path.replace(":id", id.toString())}/`,
+    };
     static ticketsCommentCreate: IRoute = {
         path: 'tickets/:id/comments/create',
         getRoute: (id: number) => `/${this.ticketsCommentCreate.path.replace(":id", id.toString())}/`,

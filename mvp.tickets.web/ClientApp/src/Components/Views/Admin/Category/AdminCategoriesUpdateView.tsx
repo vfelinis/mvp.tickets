@@ -6,13 +6,14 @@ import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { UIRoutesHelper } from '../../../../Helpers/UIRoutesHelper';
 import { ICategoryModel, ICategoryUpdateCommandRequest } from '../../../../Models/Category';
 import { useRootStore } from '../../../../Store/RootStore';
+import React from 'react';
 
 interface IAdminCategoriesUpdateViewProps {
 }
 
 const AdminCategoriesUpdateView: FC<IAdminCategoriesUpdateViewProps> = (props) => {
     const store = useRootStore();
-    const [category, setCategory] = useState<ICategoryUpdateCommandRequest>({ id: 0, name: '', isActive: true, parentCategoryId: null });
+    const [category, setCategory] = useState<ICategoryUpdateCommandRequest>({ id: 0, name: '', isActive: true, isDefault: false, parentCategoryId: null });
     const [selectedParent, setSelectedParent] = useState<ICategoryModel | null>(null);
     const { id } = useParams();
 
@@ -38,6 +39,7 @@ const AdminCategoriesUpdateView: FC<IAdminCategoriesUpdateViewProps> = (props) =
             id: store.categoryStore.category?.id ?? 0,
             name: store.categoryStore.category?.name ?? '',
             isActive: store.categoryStore.category?.isActive ?? true,
+            isDefault: store.categoryStore.category?.isDefault ?? false,
             parentCategoryId: store.categoryStore.category?.parentCategoryId ?? null
         });
         const parent = store.categoryStore.categories.find(s => s.id === store.categoryStore.category?.parentCategoryId);
@@ -70,6 +72,9 @@ const AdminCategoriesUpdateView: FC<IAdminCategoriesUpdateViewProps> = (props) =
             <FormControlLabel
                 control={<Switch checked={category.isActive} onChange={(e) => setCategory({ ...category, isActive: e.currentTarget.checked })} />}
                 label="Активная запись" />
+            <FormControlLabel
+                control={<Switch checked={category.isDefault} onChange={(e) => setCategory({ ...category, isDefault: e.currentTarget.checked })} />}
+                label="Запись по умолчанию" />
             <Autocomplete
                 disablePortal
                 value={selectedParent}

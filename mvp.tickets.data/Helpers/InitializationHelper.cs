@@ -21,11 +21,11 @@ namespace mvp.tickets.data.Helpers
                     var context = services.GetRequiredService<ApplicationDbContext>();
                     context.Database.Migrate();
 
-                    if (!context.Users.Any())
+                    if (!context.Users.Any(s => s.Email == "tickets@mvp-stack.ru"))
                     {
                         context.Users.Add(new User
                         {
-                            Email = "tickets@mvp-stack.com",
+                            Email = "tickets@mvp-stack.ru",
                             FirstName = "Admin",
                             LastName = "Admin",
                             IsLocked = false,

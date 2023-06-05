@@ -3,6 +3,7 @@ export interface ICategoryModel {
     name: string,
     isRoot: boolean,
     isActive: boolean,
+    isDefault: boolean,
     parentCategoryId: number | null,
     parentCategory: string,
     dateCreated: Date,
@@ -17,6 +18,7 @@ export interface ICategoryQueryRequest {
 
 export interface ICategoryCreateCommandRequest {
     name: string,
+    isDefault: boolean,
     isActive: boolean,
     parentCategoryId: number | null
 }

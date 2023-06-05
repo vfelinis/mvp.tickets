@@ -1,6 +1,7 @@
 export interface ITicketQueryRequest
 {
-    isUserView: boolean
+    isUserView: boolean,
+    token: string|null
 }
 
 export interface ITicketCreateCommandRequest

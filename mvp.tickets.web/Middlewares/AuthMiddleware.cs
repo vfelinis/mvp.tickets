@@ -17,6 +17,7 @@ namespace mvp.tickets.web.Middlewares
             if (string.Equals(context.Request.Method, "get", StringComparison.OrdinalIgnoreCase)
                 && !path.StartsWith("api")
                 && !path.StartsWith("login")
+                && !context.Request.Query.ContainsKey("token")
                 && !context.User.Identity.IsAuthenticated)
             {
                 context.Response.StatusCode = StatusCodes.Status302Found;

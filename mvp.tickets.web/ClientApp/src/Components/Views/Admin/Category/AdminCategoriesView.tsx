@@ -7,6 +7,7 @@ import { UIRoutesHelper } from '../../../../Helpers/UIRoutesHelper';
 import { useRootStore } from '../../../../Store/RootStore';
 import { ICategoryModel } from '../../../../Models/Category';
 import TableComponent, { ColumnType, tableColumnBooleanSearchOptions } from '../../../Shared/TableComponent';
+import React from 'react';
 
 
 interface IAdminCategoriesViewProps {
@@ -40,6 +41,10 @@ const AdminCategoriesView: FC<IAdminCategoriesViewProps> = (props) => {
                 },
                 {
                     field: 'isActive', label: 'Активная запись', type: ColumnType.Boolean, sortable: false, searchable: true,
+                    searchOptions: tableColumnBooleanSearchOptions
+                },
+                {
+                    field: 'isDefault', label: 'Запись по умолчанию', type: ColumnType.Boolean, sortable: false, searchable: true,
                     searchOptions: tableColumnBooleanSearchOptions
                 },
             ],

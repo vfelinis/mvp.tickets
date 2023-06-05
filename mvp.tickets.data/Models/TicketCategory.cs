@@ -7,6 +7,7 @@ namespace mvp.tickets.data.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public bool IsRoot { get; set; }
+        public bool IsDefault { get; set; }
         public bool IsActive { get; set; }
         public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset DateModified { get; set; }
@@ -41,6 +42,11 @@ namespace mvp.tickets.data.Models
             modelBuilder.Entity<TicketCategory>()
                 .HasIndex(p => p.Name)
                 .IsUnique(true);
+
+            modelBuilder.Entity<TicketCategory>()
+                .HasIndex(p => p.IsDefault)
+                .IsUnique(true)
+                .HasFilter($"[{nameof(TicketCategory.IsDefault)}] = 1 AND [{nameof(TicketCategory.IsActive)}] = 1");
 
             modelBuilder.Entity<TicketCategory>().ToTable(TableName);
         }

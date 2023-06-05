@@ -11,8 +11,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="$(SpaRoot)**" />
-    <None Remove="$(SpaRoot)**" />
+	<Content Remove="$(SpaRoot)**" />
+	<None Remove="$(SpaRoot)**" />
     <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
   </ItemGroup>
 
@@ -38,18 +38,17 @@
   </Target>
 
   <ItemGroup>
+    <PackageReference Include="Google.Apis.Gmail.v1" Version="1.60.0.3056" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
     <PackageReference Include="Microsoft.AspNetCore.SpaProxy" Version="6.0.5" />
+    <PackageReference Include="MimeKit" Version="4.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
+    <PackageReference Include="Telegram.Bot" Version="19.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\mvp.tickets.data\mvp.tickets.data.csproj" />
     <ProjectReference Include="..\mvp.tickets.domain\mvp.tickets.domain.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ClientApp\" />
-    <Folder Include="wwwroot\tickets\" />
   </ItemGroup>
 
 </Project>

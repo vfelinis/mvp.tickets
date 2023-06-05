@@ -69,9 +69,10 @@ export class TicketStore {
             })
     }
 
-    getEntry(id: number, isUserView: boolean) : void {
+    getEntry(id: number, isUserView: boolean, token: string|null = null) : void {
         const request: ITicketQueryRequest = {
-            isUserView: isUserView
+            isUserView: isUserView,
+            token: token
         }
         this.setIsLoading(true);
         axios.get<IBaseQueryResponse<ITicketModel>>(ApiRoutesHelper.ticket.get(id), {params: request})

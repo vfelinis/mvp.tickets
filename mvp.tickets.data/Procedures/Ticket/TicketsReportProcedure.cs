@@ -9,7 +9,7 @@ namespace mvp.tickets.data.Procedures
     public static class TicketsReportProcedure
     {
         public static string Name => "procTicketsReport";
-        public static int Version => 1;
+        public static int Version => 2;
         public static class Params
         {
             public static string SearchById => "@searchById";
@@ -54,6 +54,8 @@ BEGIN
             COUNT(*) OVER() AS [{nameof(TicketReportModel.Total)}]
             ,t.[{nameof(Ticket.Id)}] AS [{nameof(TicketReportModel.Id)}]
             ,t.[{nameof(Ticket.Name)}] AS [{nameof(TicketReportModel.Name)}]
+            ,t.[{nameof(Ticket.Token)}] AS [{nameof(TicketReportModel.Token)}]
+            ,t.[{nameof(Ticket.Source)}] AS [{nameof(TicketReportModel.Source)}]
             ,t.[{nameof(Ticket.IsClosed)}] AS [{nameof(TicketReportModel.IsClosed)}]
             ,t.[{nameof(Ticket.DateCreated)}] AS [{nameof(TicketReportModel.DateCreated)}]
             ,t.[{nameof(Ticket.DateModified)}] AS [{nameof(TicketReportModel.DateModified)}]

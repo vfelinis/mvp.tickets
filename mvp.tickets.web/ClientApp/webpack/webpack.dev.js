@@ -19,11 +19,11 @@ module.exports = {
     open: false,
     proxy: {
       '/api': {
-        target: target,
+        target: 'https://localhost:5101',
         secure: false,
       },
       '/files': {
-        target: target,
+        target: 'https://localhost:5101',
         secure: false,
       },
     },

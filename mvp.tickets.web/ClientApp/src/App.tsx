@@ -110,12 +110,18 @@ export const App: FC<IAppProps> = (props) => {
       { path: UIRoutesHelper.notFound.path, element: <NotFoundView /> },
     ],
   };
-  const loginRoutes = {
-    path: UIRoutesHelper.login.getRoute(),
+  const loginRoute = {
+    path: UIRoutesHelper.login.path,
     element: <LoginView />
   };
-
-  const routing = useRoutes([mainRoutes, loginRoutes]);
+  const ticketDetailAltRoute = {
+    path: UIRoutesHelper.ticketsDetailAlt.path,
+    element: <Layout />,
+    children: [
+      { path: '', element: <TicketDetailView /> }
+    ]
+  };
+  const routing = useRoutes([mainRoutes, loginRoute, ticketDetailAltRoute]);
 
   return <>{routing}</>;
 }

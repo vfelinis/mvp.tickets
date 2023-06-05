@@ -7,6 +7,7 @@ namespace mvp.tickets.data.Models
     {
         public int Id { get; set; }
         public string Email { get; set; }
+        public string Phone { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public Permissions Permissions { get; set; }
@@ -33,14 +34,21 @@ namespace mvp.tickets.data.Models
         {
             modelBuilder.Entity<User>(s =>
             {
-                s.Property(p => p.Email).IsRequired(true).HasMaxLength(250);
+                s.Property(p => p.Email).IsRequired(false).HasMaxLength(250);
+                s.Property(p => p.Phone).IsRequired(false).HasMaxLength(20);
                 s.Property(p => p.FirstName).IsRequired(true).HasMaxLength(50);
                 s.Property(p => p.LastName).IsRequired(true).HasMaxLength(50);
             });
 
             modelBuilder.Entity<User>()
                 .HasIndex(p => p.Email)
-                .IsUnique(true);
+                .IsUnique(true)
+                .HasFilter($"[{nameof(User.Email)}] IS NOT NULL");
+
+            modelBuilder.Entity<User>()
+                .HasIndex(p => p.Phone)
+                .IsUnique(true)
+                .HasFilter($"[{nameof(User.Phone)}] IS NOT NULL");
 
             modelBuilder.Entity<User>().ToTable(TableName);
         }

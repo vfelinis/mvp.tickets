@@ -32,6 +32,7 @@ namespace mvp.tickets.data.Stores
                 {
                     parameter.Add(GetCategoriesProcedure.Params.Id, request.Id.Value, DbType.Int32);
                 }
+                parameter.Add(GetCategoriesProcedure.Params.OnlyDefault, request.OnlyDefault, DbType.Boolean);
                 parameter.Add(GetCategoriesProcedure.Params.OnlyActive, request.OnlyActive, DbType.Boolean);
                 parameter.Add(GetCategoriesProcedure.Params.OnlyRoot, request.OnlyRoot, DbType.Boolean);
 
@@ -58,10 +59,20 @@ namespace mvp.tickets.data.Stores
                     ErrorMessage = $"Категория с названием {request.Name} уже существует."
                 };
             }
+            if (request.IsDefault && await _dbContext.TicketCategories.AnyAsync(s => s.IsDefault).ConfigureAwait(false))
+            {
+                return new BaseCommandResponse<int>
+                {
+                    IsSuccess = false,
+                    Code = ResponseCodes.BadRequest,
+                    ErrorMessage = $"Категория по умолчанию уже существует."
+                };
+            }
 
             var category = new TicketCategory
             {
                 Name = request.Name,
+                IsDefault = request.IsDefault,
                 IsActive = request.IsActive,
                 IsRoot = request.ParentCategoryId == null,
                 ParentCategoryId = request.ParentCategoryId,
@@ -87,6 +98,17 @@ namespace mvp.tickets.data.Stores
                     IsSuccess = false,
                     Code = ResponseCodes.BadRequest,
                     ErrorMessage = $"Категория с названием {request.Name} уже существует.",
+                    Data = false
+                };
+            }
+
+            if (request.IsDefault && await _dbContext.TicketQueues.AnyAsync(s => s.IsDefault && s.Id != request.Id).ConfigureAwait(false))
+            {
+                return new BaseCommandResponse<bool>
+                {
+                    IsSuccess = false,
+                    Code = ResponseCodes.BadRequest,
+                    ErrorMessage = $"Категория по умолчанию уже существует.",
                     Data = false
                 };
             }
@@ -119,6 +141,7 @@ namespace mvp.tickets.data.Stores
             request.ParentCategoryId = request.ParentCategoryId != request.Id ? request.ParentCategoryId : null;
 
             category.Name = request.Name;
+            category.IsDefault = request.IsDefault;
             category.IsActive = request.IsActive;
             category.IsRoot = request.ParentCategoryId == null;
             category.ParentCategoryId = request.ParentCategoryId;
