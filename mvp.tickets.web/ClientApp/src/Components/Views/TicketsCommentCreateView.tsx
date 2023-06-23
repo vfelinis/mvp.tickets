@@ -63,7 +63,11 @@ const TicketsCommentCreateView: FC<ITicketsCommentCreateViewProps> = (props) => 
             />
             <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }} >
                 <Button type="submit">Создать</Button>
-                <Button component={Link} to={UIRoutesHelper.ticketsDetail.getRoute(Number(id))}>Назад</Button>
+                <Button component={Link} to={
+                    searchParams.get('token')
+                    ? UIRoutesHelper.ticketsDetailAlt.getRoute(Number(id), searchParams.get('token'))
+                    : UIRoutesHelper.ticketsDetail.getRoute(Number(id))
+                    }>Назад</Button>
             </Box>
         </Box>
     </>;
