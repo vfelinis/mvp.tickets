@@ -93,6 +93,8 @@ async def submit(callback: types.CallbackQuery, state: FSMContext):
     payload = {
         'ApiKey':config.api_key.get_secret_value(),
         'Phone': user_data['phone'],
+        'firstName': callback.from_user.first_name,
+        'lastName': callback.from_user.last_name,
         'Name': user_data['name'],
         'Text': user_data['text'],
         'Files': user_data['files'] if 'files' in user_data else [],
@@ -101,7 +103,7 @@ async def submit(callback: types.CallbackQuery, state: FSMContext):
     conn.request('POST', '/api/tickets/telegram', json_data, headers)
     response = conn.getresponse()
     responseData = json.loads(response.read().decode())
-    await callback.message.answer("<a href='"+responseData['link']+"'>Ссылка на созданную заявку</a>", reply_markup=cancelButton.as_markup(), parse_mode="HTML")
+    await callback.message.answer("<a href='"+responseData['link']+"'>Ссылка на созданную заявку "+responseData['link']+"</a>", reply_markup=cancelButton.as_markup(), parse_mode="HTML")
     await state.clear()
 
 @router.message(CreateTicket.list)
@@ -122,9 +124,10 @@ async def list(message: types.Message, state: FSMContext):
         responseData = json.loads(response.read().decode())
         html = ""
         for ticket in responseData['data']:
-            html += "<a href='"+ticket['link']+"'>"+ticket['name']+" ("+ticket['dateCreated']+")</a>\n"
+            html += "<a href='"+ticket['link']+"'>Название: "+ticket['name']+", дата создания: "+ticket['dateCreated']+", ссылка: "+ticket['link']+"</a>\n"
+            html += "------------------------\n"
         logging.info(html)
-        await message.answer(html, reply_markup=cancelButton.as_markup(), parse_mode="HTML")
+        await message.answer(html, reply_markup=cancelButton.as_markup(), parse_mode='HTML')
         await state.clear()
 
 @router.message(CreateTicket.save_phone_number)

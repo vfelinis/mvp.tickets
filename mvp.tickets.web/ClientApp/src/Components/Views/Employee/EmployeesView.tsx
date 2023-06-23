@@ -65,6 +65,13 @@ const EmployeesView: FC<IEmployeesViewProps> = (props) => {
                 { field: 'name', label: 'Название', type: ColumnType.String, sortable: false, searchable: false },
                 { field: 'dateCreated', label: 'Создан', type: ColumnType.Date, sortable: true, searchable: false },
                 { field: 'dateModified', label: 'Обновлен', type: ColumnType.Date, sortable: true, searchable: false },
+                { field: 'source', label: 'Источник', type: ColumnType.String, sortable: false, searchable: true,
+                    searchOptions: [
+                        { id: '0', name: 'Web' },
+                        { id: '1', name: 'Email' },
+                        { id: '2', name: 'Telegram' }
+                    ]
+                },
                 { field: 'reporterEmail', label: 'Создал', type: ColumnType.String, sortable: true, searchable: true },
                 { field: 'assigneeEmail', label: 'Назначено', type: ColumnType.String, sortable: true, searchable: true },
                 {

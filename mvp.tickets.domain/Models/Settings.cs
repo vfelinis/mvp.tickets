@@ -18,6 +18,7 @@
     }
     public class GMailSettings
     {
+        public string Alias { get; set; }
         public string Email { get; set; }
         public string ClientID { get; set; }
         public string ClientSecret { get; set; }

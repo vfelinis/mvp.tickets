@@ -99,6 +99,10 @@ namespace mvp.tickets.web.Controllers
                             {
                                 parameter.Add(TicketsReportProcedure.Params.SearchByTicketCategoryId, Convert.ToInt32(search.Value), DbType.Int32);
                             }
+                            if (string.Equals(search.Key, nameof(Ticket.Source), StringComparison.OrdinalIgnoreCase))
+                            {
+                                parameter.Add(TicketsReportProcedure.Params.SearchBySource, (int)Enum.Parse<TicketSource>(search.Value), DbType.Int32);
+                            }
                         }
                     }
 
@@ -206,15 +210,10 @@ namespace mvp.tickets.web.Controllers
                                 Id = x.Id,
                                 DateCreated = x.DateCreated,
                                 OriginalFileName = x.OriginalFileName,
-                                Path = x.FileName + "." + x.Extension
+                                Path = $"/{TicketConstants.AttachmentFolder}/{s.CreatorId}/{x.FileName + "." + x.Extension}"
                             }).ToList()
                         })
                         .ToListAsync();
-
-                    foreach(var ticketCommentAttachment in entry.TicketComments.SelectMany(s => s.TicketCommentAttachmentModels))
-                    {
-                        ticketCommentAttachment.Path = $"/{TicketConstants.AttachmentFolder}/{entry.ReporterId}/{ticketCommentAttachment.Path}";
-                    }
 
                     return new BaseQueryResponse<ITicketModel>
                     {
@@ -324,7 +323,7 @@ namespace mvp.tickets.web.Controllers
                             };
                             ticketComment.TicketCommentAttachments.Add(ticketCommentAttachment);
 
-                            var path = Path.Join(_environment.WebRootPath, $"/{TicketConstants.AttachmentFolder}/{userId}/{ticketCommentAttachment.FileName}.{ext}");
+                            var path = Path.Join(_environment.WebRootPath, $"/{TicketConstants.AttachmentFolder}/{entry.ReporterId}/{ticketCommentAttachment.FileName}.{ext}");
                             Directory.CreateDirectory(Path.GetDirectoryName(path));
                             using (var stream = System.IO.File.Create(path))
                             {
@@ -387,8 +386,8 @@ namespace mvp.tickets.web.Controllers
                     {
                         Phone = request.Phone,
                         Email = null,
-                        FirstName = request.Phone,
-                        LastName = "",
+                        FirstName = request.FirstName ?? request.Phone,
+                        LastName = request.LastName ?? "",
                         Permissions = domain.Enums.Permissions.User,
                         IsLocked = false,
                         DateCreated = DateTimeOffset.Now,
@@ -478,10 +477,11 @@ namespace mvp.tickets.web.Controllers
                             };
                             ticketComment.TicketCommentAttachments.Add(ticketCommentAttachment);
 
-                            var path = Path.Join(_environment.WebRootPath, $"/{TicketConstants.AttachmentFolder}/{user.Id}/{ticketCommentAttachment.FileName}.{ext}");
+                            var path = Path.Join(_environment.WebRootPath, $"/{TicketConstants.AttachmentFolder}/{entry.ReporterId}/{ticketCommentAttachment.FileName}.{ext}");
                             Directory.CreateDirectory(Path.GetDirectoryName(path));
                             using (var stream = System.IO.File.Create(path))
                             {
+                                fileStream.Seek(0, SeekOrigin.Begin);
                                 await fileStream.CopyToAsync(stream);
                             }
                         }
@@ -491,7 +491,7 @@ namespace mvp.tickets.web.Controllers
                 await _dbContext.Tickets.AddAsync(entry).ConfigureAwait(false);
                 await _dbContext.SaveChangesAsync().ConfigureAwait(false);
 
-                var link = $"https://{_settings.Host}/tickets/{entry.Id}/?token={entry.Token}";
+                var link = $"https://{_settings.Host}/tickets/{entry.Id}/alt/?token={entry.Token}";
                 return Ok(new { link });
             }
             catch (Exception ex)
@@ -520,7 +520,7 @@ namespace mvp.tickets.web.Controllers
                 var tickets = await _dbContext.Tickets.AsNoTracking().Where(s => s.ReporterId == user.Id && s.Source == TicketSource.Telegram)
                     .OrderByDescending(s => s.DateCreated).Take(10).ToListAsync();
 
-                return Ok(new { data = tickets.Select(s => new { name = s.Name, dateCreated = s.DateCreated, link = $"https://{_settings.Host}/tickets/{s.Id}/?token={s.Token}" }) });
+                return Ok(new { data = tickets.Select(s => new { name = s.Name, dateCreated = s.DateCreated, link = $"https://{_settings.Host}/tickets/{s.Id}/alt/?token={s.Token}" }) });
             }
             catch (Exception ex)
             {
@@ -529,9 +529,8 @@ namespace mvp.tickets.web.Controllers
             }
         }
 
-        [Authorize]
         [HttpPost("{id}/comments")]
-        public async Task<IBaseCommandResponse<int>> CreateComment(int id, [FromForm] TicketCommentCreateCommandRequest request)
+        public async Task<IBaseCommandResponse<int>> CreateComment(int id, [FromQuery] string token, [FromForm] TicketCommentCreateCommandRequest request)
         {
             if (request == null)
             {
@@ -546,7 +545,7 @@ namespace mvp.tickets.web.Controllers
 
             try
             {
-                if (!User.Claims.Any(s => s.Type == AuthConstants.EmployeeClaim) && !User.Claims.Any(s => s.Type == AuthConstants.UserClaim))
+                if (!User.Claims.Any(s => s.Type == AuthConstants.EmployeeClaim) && !User.Claims.Any(s => s.Type == AuthConstants.UserClaim) && string.IsNullOrWhiteSpace(token))
                 {
                     return new BaseCommandResponse<int>
                     {
@@ -565,7 +564,28 @@ namespace mvp.tickets.web.Controllers
                     };
                 }
 
-                var userId = int.Parse(User.Claims.First(s => s.Type == ClaimTypes.Sid).Value);
+                int userId = ticket.ReporterId;
+                if (User.Identity.IsAuthenticated)
+                {
+                    userId = int.Parse(User.Claims.First(s => s.Type == ClaimTypes.Sid).Value);
+                    if (!User.Claims.Any(s => s.Type == AuthConstants.EmployeeClaim) || ticket.ReporterId != userId)
+                    {
+                        return new BaseCommandResponse<int>
+                        {
+                            IsSuccess = false,
+                            Code = ResponseCodes.BadRequest
+                        };
+                    }
+                }
+                else if (string.IsNullOrWhiteSpace(token) || ticket.Token != token)
+                {
+                    return new BaseCommandResponse<int>
+                    {
+                        IsSuccess = false,
+                        Code = ResponseCodes.BadRequest
+                    };
+                }
+                
                 if (!string.IsNullOrWhiteSpace(request.Text) || request.Files?.Any() == true)
                 {
                     var ticketComment = new TicketComment
@@ -596,7 +616,7 @@ namespace mvp.tickets.web.Controllers
                             };
                             ticketComment.TicketCommentAttachments.Add(ticketCommentAttachment);
 
-                            var path = Path.Join(_environment.WebRootPath, $"/{TicketConstants.AttachmentFolder}/{userId}/{ticketCommentAttachment.FileName}.{ext}");
+                            var path = Path.Join(_environment.WebRootPath, $"/{TicketConstants.AttachmentFolder}/{ticket.ReporterId}/{ticketCommentAttachment.FileName}.{ext}");
                             Directory.CreateDirectory(Path.GetDirectoryName(path));
                             using (var stream = System.IO.File.Create(path))
                             {

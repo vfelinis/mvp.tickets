@@ -121,7 +121,14 @@ export const App: FC<IAppProps> = (props) => {
       { path: '', element: <TicketDetailView /> }
     ]
   };
-  const routing = useRoutes([mainRoutes, loginRoute, ticketDetailAltRoute]);
+  const ticketsCommentCreateAltRoute = {
+    path: UIRoutesHelper.ticketsCommentCreateAlt.path,
+    element: <Layout />,
+    children: [
+      { path: '', element: <TicketsCommentCreateView /> }
+    ]
+  };
+  const routing = useRoutes([mainRoutes, loginRoute, ticketDetailAltRoute, ticketsCommentCreateAltRoute]);
 
   return <>{routing}</>;
 }

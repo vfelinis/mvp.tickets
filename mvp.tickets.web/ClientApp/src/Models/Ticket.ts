@@ -24,6 +24,7 @@ export interface ITicketModel
     isClosed: boolean
     dateCreated: Date
     dateModified: Date
+    source: string
 
     reporterId: number
     reporterEmail: string

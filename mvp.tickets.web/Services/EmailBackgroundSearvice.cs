@@ -21,7 +21,7 @@ namespace mvp.tickets.web.Services
         private readonly ILogger<EmailBackgroundSearvice> _logger;
         private readonly IWebHostEnvironment _environment;
         private readonly ISettings _settings;
-        private const int _delayInSec = 60;
+        private const int _delayInSec = 15;
 
         public EmailBackgroundSearvice(IServiceScopeFactory serviceScopeFactory, ILogger<EmailBackgroundSearvice> logger, ISettings settings, IWebHostEnvironment environment)
         {
@@ -63,7 +63,13 @@ namespace mvp.tickets.web.Services
                                 var messageResponse = await messageRequest.ExecuteAsync();
                                 using MemoryStream rawInStream = new MemoryStream(Base64FUrlDecode(messageResponse.Raw));
                                 var mailMessage = MimeKit.MimeMessage.Load(rawInStream);
-                                
+                                var aliase = mailMessage.To.Mailboxes.First().Address.ToLower();
+                                if (!string.Equals(aliase, _settings.Gmail.Alias))
+                                {
+                                    await gmailService.Users.Messages.Delete(_settings.Gmail.Email, messageFromList.Id).ExecuteAsync();
+                                    continue;
+                                }
+
                                 var defaultQueue = await dbContext.TicketQueues.AsNoTracking().FirstOrDefaultAsync(s => s.IsDefault);
                                 if (defaultQueue == null)
                                 {
@@ -83,14 +89,15 @@ namespace mvp.tickets.web.Services
                                 }
 
                                 var email = mailMessage.From.Mailboxes.First().Address.ToLower();
+                                var userName = mailMessage.From.Mailboxes.First().Name ?? "";
                                 var user = await dbContext.Users.FirstOrDefaultAsync(s => s.Email == email);
                                 if (user == null)
                                 {
                                     user = new User
                                     {
                                         Email = email,
-                                        FirstName = mailMessage.From.Mailboxes.First().Name,
-                                        LastName = "",
+                                        FirstName = userName?.Split(' ').First(),
+                                        LastName = userName?.Split(' ').Last(),
                                         Permissions = domain.Enums.Permissions.User,
                                         IsLocked = false,
                                         DateCreated = DateTimeOffset.Now,
@@ -105,7 +112,7 @@ namespace mvp.tickets.web.Services
                                         await firebaseAuth.CreateUserAsync(new FirebaseAdmin.Auth.UserRecordArgs
                                         {
                                             Email = user.Email,
-                                            DisplayName = !string.IsNullOrWhiteSpace(user.FirstName) ? user.FirstName : user.Email.Split('@').First(),
+                                            DisplayName = !string.IsNullOrWhiteSpace(userName) ? userName : user.Email.Split('@').First(),
                                             Password = Guid.NewGuid().ToString()
                                         });
                                     }
@@ -192,6 +199,7 @@ namespace mvp.tickets.web.Services
                                                 Directory.CreateDirectory(Path.GetDirectoryName(path));
                                                 using (var stream = System.IO.File.Create(path))
                                                 {
+                                                    file.Seek(0, SeekOrigin.Begin);
                                                     await file.CopyToAsync(stream);
                                                 }
                                             }
@@ -201,11 +209,11 @@ namespace mvp.tickets.web.Services
                                     await dbContext.Tickets.AddAsync(entry);
                                     await dbContext.SaveChangesAsync();
 
-                                    var link = $"https://{_settings.Host}/tickets/{entry.Id}/?token={entry.Token}";
+                                    var link = $"https://{_settings.Host}/tickets/{entry.Id}/alt/?token={entry.Token}";
                                     mailMessage.To.Clear();
                                     mailMessage.To.Add(new MimeKit.MailboxAddress("", user.Email));
                                     mailMessage.Subject = entry.Name;
-                                    mailMessage.Body = new MimeKit.BodyBuilder { HtmlBody = $"<a href='{link}'>Ссылка на созданную заявку</a>" }.ToMessageBody();
+                                    mailMessage.Body = new MimeKit.BodyBuilder { HtmlBody = $"<a href='{link}'>Ссылка на созданную заявку {link}</a>" }.ToMessageBody();
 
                                     messageResponse.Raw = Encode(mailMessage);
                                     await gmailService.Users.Messages.Send(messageResponse, _settings.Gmail.Email).ExecuteAsync();

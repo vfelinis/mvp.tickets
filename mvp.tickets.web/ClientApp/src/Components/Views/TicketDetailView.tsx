@@ -67,7 +67,11 @@ const TicketDetailView: FC<ITicketDetailViewProps> = (props) => {
         <Typography variant="h6" component="div" sx={{mt:3}}>
             Комментарии
         </Typography>
-        <Button  sx={{mb:2}} variant="contained" component={Link} to={UIRoutesHelper.ticketsCommentCreate.getRoute(entry?.id ?? 0)}>Добавить комментарий</Button>
+        <Button  sx={{mb:2}} variant="contained" component={Link} to={
+            searchParams.get('token')
+            ? UIRoutesHelper.ticketsCommentCreateAlt.getRoute(entry?.id ?? 0, searchParams.get('token'))
+            : UIRoutesHelper.ticketsCommentCreate.getRoute(entry?.id ?? 0)
+            }>Добавить комментарий</Button>
         <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 4, sm: 8, md: 12 }}>
             {entry?.ticketComments.map((s, index) => (
                 <Grid item xs={2} sm={4} md={4} key={index}>
@@ -81,7 +85,7 @@ const TicketDetailView: FC<ITicketDetailViewProps> = (props) => {
                                         <Divider />
                                         <ListItem>
                                             <ListItemText>
-                                                <MuiLink href={x.path} target="_blank">{x.originalFileName}</MuiLink>
+                                                <MuiLink href={`${x.path}?token=${searchParams.get('token')}`} target="_blank">{x.originalFileName}</MuiLink>
                                             </ListItemText>
                                         </ListItem>
                                     </Box>

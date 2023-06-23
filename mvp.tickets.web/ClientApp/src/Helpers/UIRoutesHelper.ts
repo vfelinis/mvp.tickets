@@ -19,11 +19,15 @@ export class UIRoutesHelper {
     };
     static ticketsDetailAlt: IRoute = {
         path: 'tickets/:id/alt',
-        getRoute: (id: number) => `/${this.ticketsDetailAlt.path.replace(":id", id.toString())}/`,
+        getRoute: (id: number, token: string) => `/${this.ticketsDetailAlt.path.replace(":id", id.toString())}/?token=${token}`,
     };
     static ticketsCommentCreate: IRoute = {
         path: 'tickets/:id/comments/create',
         getRoute: (id: number) => `/${this.ticketsCommentCreate.path.replace(":id", id.toString())}/`,
+    };
+    static ticketsCommentCreateAlt: IRoute = {
+        path: 'tickets/:id/comments/create/alt',
+        getRoute: (id: number, token: string) => `/${this.ticketsCommentCreateAlt.path.replace(":id", id.toString())}/?token=${token}`,
     };
 
 

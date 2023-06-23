@@ -1,6 +1,6 @@
 import { Autocomplete, Box, Button, Typography } from '@mui/material';
 import { FC, useState, useEffect, Children } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { ValidatorForm, TextValidator } from 'react-material-ui-form-validator';
 import { UIRoutesHelper } from '../../Helpers/UIRoutesHelper';
@@ -16,6 +16,7 @@ const TicketsCommentCreateView: FC<ITicketsCommentCreateViewProps> = (props) => 
     const store = useRootStore();
     const [entry, setEntry] = useState<ITicketCommentCreateCommandRequest>({ text: '', isInternal: false });
     const { id } = useParams();
+    const [searchParams] = useSearchParams();
 
     const handleSubmit = () => {
         const formData = new FormData();
@@ -26,7 +27,7 @@ const TicketsCommentCreateView: FC<ITicketsCommentCreateViewProps> = (props) => 
         if (entry.text) {
             formData.append("text", entry.text);
         }
-        store.ticketStore.createComment(Number(id), true, formData);
+        store.ticketStore.createComment(Number(id), true, formData, searchParams.get('token'));
     }
 
 

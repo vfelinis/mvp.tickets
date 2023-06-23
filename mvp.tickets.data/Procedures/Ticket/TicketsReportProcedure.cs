@@ -9,7 +9,7 @@ namespace mvp.tickets.data.Procedures
     public static class TicketsReportProcedure
     {
         public static string Name => "procTicketsReport";
-        public static int Version => 2;
+        public static int Version => 5;
         public static class Params
         {
             public static string SearchById => "@searchById";
@@ -21,6 +21,7 @@ namespace mvp.tickets.data.Procedures
             public static string SearchByTicketResolutionId => "@searchByTicketResolutionId";
             public static string SearchByTicketStatusId => "@searchByTicketStatusId";
             public static string SearchByTicketCategoryId => "@searchByTicketCategoryId";
+            public static string SearchBySource => "@searchBySource";
             public static string SortBy => "@sortBy";
             public static string SortDirection => "@sortDirection";
             public static string Offset => "@offset";
@@ -39,6 +40,7 @@ CREATE PROCEDURE [{Name}]
     {Params.SearchByTicketResolutionId} INT = NULL,
     {Params.SearchByTicketStatusId} INT = NULL,
     {Params.SearchByTicketCategoryId} INT = NULL,
+    {Params.SearchBySource} INT = NULL,
     {Params.SortBy} NVARCHAR(MAX) = '{nameof(User.Id)}',
     {Params.SortDirection} NVARCHAR(4) = '{SortDirection.ASC.ToString()}',
     {Params.Offset} INT,
@@ -55,7 +57,11 @@ BEGIN
             ,t.[{nameof(Ticket.Id)}] AS [{nameof(TicketReportModel.Id)}]
             ,t.[{nameof(Ticket.Name)}] AS [{nameof(TicketReportModel.Name)}]
             ,t.[{nameof(Ticket.Token)}] AS [{nameof(TicketReportModel.Token)}]
-            ,t.[{nameof(Ticket.Source)}] AS [{nameof(TicketReportModel.Source)}]
+            ,CASE t.[{nameof(Ticket.Source)}]
+                WHEN {(int)TicketSource.Email} THEN ''Email''
+                WHEN {(int)TicketSource.Telegram} THEN ''Telegram''
+                ELSE ''Web''
+            END AS [{nameof(TicketReportModel.Source)}]
             ,t.[{nameof(Ticket.IsClosed)}] AS [{nameof(TicketReportModel.IsClosed)}]
             ,t.[{nameof(Ticket.DateCreated)}] AS [{nameof(TicketReportModel.DateCreated)}]
             ,t.[{nameof(Ticket.DateModified)}] AS [{nameof(TicketReportModel.DateModified)}]
@@ -131,6 +137,10 @@ BEGIN
     BEGIN
         SET @Sql = @Sql + ' AND t.[{nameof(Ticket.TicketCategoryId)}] = {Params.SearchByTicketCategoryId}';
     END
+    IF {Params.SearchBySource} IS NOT NULL
+    BEGIN
+        SET @Sql = @Sql + ' AND t.[{nameof(Ticket.Source)}] = {Params.SearchBySource}';
+    END
 
     SET @Sql = @Sql + ' ORDER BY t.[' + {Params.SortBy} + '] ' + {Params.SortDirection} + ' OFFSET {Params.Offset} ROWS FETCH NEXT {Params.Limit} ROWS ONLY';
 
@@ -145,6 +155,7 @@ BEGIN
         {Params.SearchByTicketResolutionId} INT,
         {Params.SearchByTicketStatusId} INT,
         {Params.SearchByTicketCategoryId} INT,
+        {Params.SearchBySource} INT,
         {Params.Offset} INT,
         {Params.Limit} INT
     ';
@@ -159,6 +170,7 @@ BEGIN
         {Params.SearchByTicketResolutionId} = {Params.SearchByTicketResolutionId},
         {Params.SearchByTicketStatusId} = {Params.SearchByTicketStatusId},
         {Params.SearchByTicketCategoryId} = {Params.SearchByTicketCategoryId},
+        {Params.SearchBySource} = {Params.SearchBySource},
         {Params.Offset} = {Params.Offset},
         {Params.Limit} = {Params.Limit};
 END";

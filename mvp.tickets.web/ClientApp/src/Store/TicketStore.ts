@@ -108,13 +108,18 @@ export class TicketStore {
             })
     }
 
-    createComment(id: number, isUserView: boolean, request: FormData) : void {
+    createComment(id: number, isUserView: boolean, request: FormData, token: string|null = null) : void {
         this.setIsLoading(true);
-        axios.post<IBaseCommandResponse<number>>(ApiRoutesHelper.ticket.createComment(id), request, { headers: { "Content-Type": "multipart/form-data" } })
+        axios.post<IBaseCommandResponse<number>>(ApiRoutesHelper.ticket.createComment(id), request, { params:{ token:token }, headers: { "Content-Type": "multipart/form-data" } })
             .then(response => {
                 this.setIsLoading(false);
                 if (response.data.isSuccess) {
-                    browserHistory.push(isUserView ? UIRoutesHelper.ticketsDetail.getRoute(id) : UIRoutesHelper.employeeTicketDetail.getRoute(id));
+                    browserHistory.push(
+                        isUserView
+                            ? token
+                                ? UIRoutesHelper.ticketsDetailAlt.getRoute(id, token)
+                                : UIRoutesHelper.ticketsDetail.getRoute(id)
+                            : UIRoutesHelper.employeeTicketDetail.getRoute(id));
                 } else {
                     this.rootStore.errorStore.setError(response.data.errorMessage ?? response.data.code.toString());
                 }

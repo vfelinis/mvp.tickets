@@ -33,6 +33,7 @@ namespace mvp.tickets.domain.Models
         bool IsClosed { get; set; }
         DateTimeOffset DateCreated { get; set; }
         DateTimeOffset DateModified { get; set; }
+        string Source { get; set; }
 
         int ReporterId { get; set; }
         string ReporterEmail { get; set; }
@@ -66,7 +67,7 @@ namespace mvp.tickets.domain.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public string Token { get; set; }
-        public TicketSource Source { get; set; }
+        public string Source { get; set; }
         public bool IsClosed { get; set; }
         public DateTimeOffset DateCreated { get; set; }
         public DateTimeOffset DateModified { get; set; }

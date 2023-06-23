@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Localization;
+using Microsoft.EntityFrameworkCore;
+using mvp.tickets.data;
 using mvp.tickets.data.Helpers;
 using mvp.tickets.domain.Constants;
 using mvp.tickets.web.Extensions;
@@ -36,15 +38,43 @@ app.Use(async (context, next) =>
     var path = context.Request.Path.Value.TrimStart('/').ToLower();
     if (path.StartsWith(TicketConstants.AttachmentFolder))
     {
-        if (!context.User.Identity.IsAuthenticated)
+        if (context.User.Identity.IsAuthenticated)
         {
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            await context.Response.WriteAsync("Unauthorized");
-            return;
+            var userId = int.Parse(context.User.Claims.First(s => s.Type == ClaimTypes.Sid).Value);
+            if (!context.User.Claims.Any(s => s.Type == AuthConstants.EmployeeClaim)
+                && !path.StartsWith($"{TicketConstants.AttachmentFolder}/{userId}/"))
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsync("Unauthorized");
+                return;
+            }
         }
-        var userId = int.Parse(context.User.Claims.First(s => s.Type == ClaimTypes.Sid).Value);
-        if (!context.User.Claims.Any(s => s.Type == AuthConstants.EmployeeClaim)
-            || !path.StartsWith($"{TicketConstants.AttachmentFolder}/{userId}/"))
+        else if (context.Request.Query.ContainsKey("token"))
+        {
+            var token = (string)context.Request.Query["token"];
+            if (string.IsNullOrEmpty(token))
+            {
+                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                await context.Response.WriteAsync("Unauthorized");
+                return;
+            }
+            else
+            {
+                using (var scope = context.RequestServices.CreateScope())
+                {
+                    var dbContext = scope.ServiceProvider.GetService<ApplicationDbContext>();
+                    var fileName = Path.GetFileNameWithoutExtension(path);
+                    var isValid = await dbContext.TicketCommentAttachments.AnyAsync(s => s.FileName == fileName && s.TicketComment.Ticket.Token == token);
+                    if (!isValid)
+                    {
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        await context.Response.WriteAsync("Unauthorized");
+                        return;
+                    }
+                }
+            }
+        }
+        else
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
             await context.Response.WriteAsync("Unauthorized");
